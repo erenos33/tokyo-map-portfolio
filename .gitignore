@@ -16,3 +16,5 @@ out/
 # 환경파일
 .env
 application-*.yml
+application-local.yml
+application-prod.yml
