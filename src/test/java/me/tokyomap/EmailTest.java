@@ -1,5 +1,9 @@
 package me.tokyomap;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import me.tokyomap.domain.user.entity.QUser;
+import me.tokyomap.domain.user.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -7,19 +11,27 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @SpringBootTest
 @Transactional
 public class EmailTest {
     @Autowired
-    private JavaMailSender mailSender;
+    private EntityManager em;
 
 
     @Test
-    public void sendTestMail() {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("erenos33@gmail.com");
-        message.setSubject("테스트 메일");
-        message.setText("이건 도쿄 맛집 포트폴리오 프로젝트에서 보낸 테스트 메일이에요!");
-        mailSender.send(message);
+    void querydslTest() {
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QUser qUser = QUser.user;
+
+        List<User> result = query
+                .selectFrom(qUser)
+                .where(qUser.email.eq("erenos33@gmail.com"))
+                .fetch();
+
+        System.out.println(result);
     }
+
+
 }
