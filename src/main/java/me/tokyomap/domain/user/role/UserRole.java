@@ -1,4 +1,5 @@
 package me.tokyomap.domain.user.role;
 
-public class UserRole {
+public enum UserRole {
+    USER, ADMIN
 }

@@ -56,3 +56,13 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register("compileQuerydsl", JavaCompile) {
+	group = "build"
+	description = "Compile Querydsl Q-type classes"
+	source = sourceSets.main.java
+	classpath = sourceSets.main.compileClasspath
+	destinationDirectory.set(file("$buildDir/generated/querydsl"))
+	options.annotationProcessorPath = configurations.annotationProcessor
+}
+

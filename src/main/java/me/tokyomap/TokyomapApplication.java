@@ -10,6 +10,7 @@ public class TokyomapApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TokyomapApplication.class, args);
+
 	}
 
 }
