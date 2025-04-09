@@ -36,6 +36,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	// ✅ 테스트에서도 Lombok을 쓰기 위해 다음도 필요해!
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
