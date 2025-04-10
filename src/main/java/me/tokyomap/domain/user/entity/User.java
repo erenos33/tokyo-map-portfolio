@@ -27,7 +27,6 @@ public class User extends BaseTimeEntity {
     private String email;
 
     @NotBlank
-    @Size(min = 8, max = 20)
     @Column(nullable = false)
     private String password;
 
