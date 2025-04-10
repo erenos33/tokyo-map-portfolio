@@ -37,6 +37,7 @@ public class User extends BaseTimeEntity {
     private boolean emailVerified;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
     private UserRole role;
 
     @Builder

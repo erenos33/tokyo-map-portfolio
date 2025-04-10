@@ -3,6 +3,7 @@ package me.tokyomap.service.impl;
 import lombok.RequiredArgsConstructor;
 import me.tokyomap.domain.user.entity.User;
 import me.tokyomap.domain.user.repository.UserRepository;
+import me.tokyomap.domain.user.role.UserRole;
 import me.tokyomap.dto.user.UserRegisterRequestDto;
 import me.tokyomap.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
                 .password(encodedPassword)
                 .nickname(requestDto.getNickname())
                 .emailVerified(false)//이메일 인증은 아지 안해서 false
+                .role(UserRole.USER)
                 .build();
 
         //4.저장
