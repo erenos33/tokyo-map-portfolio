@@ -14,10 +14,12 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000") // 프론트 주소
+                        .allowedOrigins("http://localhost:5178") // 프론트 주소
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);
+
+
             }
         };
     }

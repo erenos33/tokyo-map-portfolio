@@ -21,6 +21,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .and()
+                .formLogin().disable() //로그인 패스워드 로그 삭제
                 .authorizeHttpRequests()
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().permitAll();
