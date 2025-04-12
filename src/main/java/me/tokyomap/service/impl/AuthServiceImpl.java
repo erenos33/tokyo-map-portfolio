@@ -1,5 +1,8 @@
 package me.tokyomap.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.tokyomap.domain.user.entity.User;
 import me.tokyomap.domain.user.repository.UserRepository;
@@ -20,12 +23,14 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
+
     @Override
     public String login(String email, String password) {
 
         //1. 이메일로 유저 검색
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException(MSG_USER_NOT_FOUND));
+
 
         //2. 이메일 인증 확인
         if (!user.isEmailVerified()) {
