@@ -6,10 +6,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.tokyomap.domain.user.entity.User;
 import me.tokyomap.domain.user.repository.UserRepository;
+import me.tokyomap.dto.LoginResponseDto;
 import me.tokyomap.security.JwtTokenProvider;
 import me.tokyomap.service.AuthService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public String login(String email, String password) {
+    public LoginResponseDto login(String email, String password) {
 
         //1. 이메일로 유저 검색
         User user = userRepository.findByEmail(email)
@@ -42,8 +45,10 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException(MSG_PASSWORD_MISMATCH);
         }
 
-        //4. JWT 토큰 발급
+        //4. JWT 토큰 및 만료시간 발급
+        String token = jwtTokenProvider.createToken(user.getEmail());
+        Date expiresAt = jwtTokenProvider.getExpirationDate();
 
-        return jwtTokenProvider.createToken(user.getEmail());
+        return new LoginResponseDto(token, expiresAt);
     }
 }

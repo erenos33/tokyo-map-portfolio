@@ -50,4 +50,8 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+    public Date getExpirationDate() {
+        return new Date(System.currentTimeMillis() + expiration);
+    }
 }
