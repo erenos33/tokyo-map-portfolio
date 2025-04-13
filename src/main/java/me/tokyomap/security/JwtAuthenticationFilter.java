@@ -1,15 +1,20 @@
 package me.tokyomap.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -31,9 +36,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             //3.토큰에서 이메일 추출
             String email = jwtTokenProvider.getEmailFromToken(token);
 
-            //4. 인증 객체 생성 및 SecurityContext에 저장
+            //JWT 권한 클레임 추출
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(jwtTokenProvider.getSecretkey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String role = claims.get("auth", String.class); //ex: "ROLE_ADMIN"
+            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
+            //4. 권한이 포함된 인증 객체 생성
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(email, null, null);
+                    new UsernamePasswordAuthenticationToken(email, null, authorities);
+
+            //securityContext에 등록
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

@@ -8,11 +8,13 @@ import lombok.*;
 import me.tokyomap.domain.common.BaseTimeEntity;
 import me.tokyomap.domain.user.role.UserRole;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 @ToString(exclude = "password")
 public class User extends BaseTimeEntity {
 
@@ -40,12 +42,31 @@ public class User extends BaseTimeEntity {
     @Column(nullable = true)
     private UserRole role;
 
+    @Column(name = "verification_code")
+    private String verificationCode;
+
+    @Column(name = "verification_expiration")
+    private LocalDateTime verificationCodeExpiresAt;
+
     @Builder
-    public User(String email, String password, String nickname, boolean emailVerified, UserRole role) {
+    public User(String email, String password, String nickname, boolean emailVerified, UserRole role, String verificationCode) {
+
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.emailVerified = emailVerified;
         this.role = role;
+        this.verificationCode = verificationCode;
+    }
+
+    public void updateVerificationCode(String verificationCode, LocalDateTime expiresAt) {
+        this.verificationCode = verificationCode;
+        this.verificationCodeExpiresAt = expiresAt;
+    }
+
+    public void veriFyEmail() {
+
+        this.emailVerified = true;
+        this.verificationCode = null;//인증 성공 시 코드 삭제
     }
 }

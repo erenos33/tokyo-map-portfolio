@@ -5,6 +5,8 @@ import me.tokyomap.domain.user.entity.User;
 import me.tokyomap.domain.user.repository.UserRepository;
 import me.tokyomap.domain.user.role.UserRole;
 import me.tokyomap.dto.user.UserRegisterRequestDto;
+import me.tokyomap.exception.CustomException;
+import me.tokyomap.exception.ErrorCode;
 import me.tokyomap.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ public class UserServiceImpl implements UserService {
     public void registerUser(UserRegisterRequestDto requestDto) {
         //1. 이메일 중복 체크
         if(userRepository.existsByEmail(requestDto.getEmail())) {
-            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         //2. 비밀번호 암호화
@@ -32,7 +34,7 @@ public class UserServiceImpl implements UserService {
                 .email(requestDto.getEmail())
                 .password(encodedPassword)
                 .nickname(requestDto.getNickname())
-                .emailVerified(false)//이메일 인증은 아지 안해서 false
+                .emailVerified(false)
                 .role(UserRole.USER)
                 .build();
 

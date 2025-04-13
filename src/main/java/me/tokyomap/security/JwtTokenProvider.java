@@ -2,11 +2,14 @@ package me.tokyomap.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
 
 @Slf4j
@@ -15,18 +18,27 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
-    private String secretKey;
+    private String secret;
+
+    private Key secretKey;
 
     @Value("${jwt.expiration}")
     private long expiration;
 
-    public String createToken(String email) {
+    //애플리케이션 시작 시 시크릿 키 초기화
+    @PostConstruct
+    protected void init() {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
+    public String createToken(String email, String role) {
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(email)
+                .claim("auth", role) // 올바름. ex: "ROLE_USER"//권한 정보 추가
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -53,5 +65,9 @@ public class JwtTokenProvider {
 
     public Date getExpirationDate() {
         return new Date(System.currentTimeMillis() + expiration);
+    }
+
+    public Key getSecretkey() {
+        return secretKey;
     }
 }

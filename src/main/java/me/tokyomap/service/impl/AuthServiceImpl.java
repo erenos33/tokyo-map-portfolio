@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import me.tokyomap.domain.user.entity.User;
 import me.tokyomap.domain.user.repository.UserRepository;
 import me.tokyomap.dto.LoginResponseDto;
+import me.tokyomap.exception.CustomException;
+import me.tokyomap.exception.ErrorCode;
 import me.tokyomap.security.JwtTokenProvider;
 import me.tokyomap.service.AuthService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,21 +34,21 @@ public class AuthServiceImpl implements AuthService {
 
         //1. 이메일로 유저 검색
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException(MSG_USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
 
         //2. 이메일 인증 확인
         if (!user.isEmailVerified()) {
-            throw new IllegalArgumentException(MSG_EMAIL_NOT_VERIFIED);
+            throw new CustomException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
         //3. 비밀번호 확인
         if(!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException(MSG_PASSWORD_MISMATCH);
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         //4. JWT 토큰 및 만료시간 발급
-        String token = jwtTokenProvider.createToken(user.getEmail());
+        String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole().name());
         Date expiresAt = jwtTokenProvider.getExpirationDate();
 
         return new LoginResponseDto(token, expiresAt);
