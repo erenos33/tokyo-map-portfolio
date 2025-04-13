@@ -1,17 +1,23 @@
-// src/api/userApi.js
-export async function registerUser(data) {
-    try {
-        const response = await fetch('http://localhost:8080/api/users/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+import axios from './axiosInstance';
 
-        return response.ok;
-    } catch (error) {
-        console.error('회원가입 요청 실패:', error);
-        return false;
+export async function registerUser(userData) {
+    try {
+        const response = await axios.post('/users/register', userData);
+        return response.data;
+    } catch (err) {
+        throw new Error('회원가입 실패');
+    }
+}
+
+export async function getUserTest() {
+    try {
+        const res = await axios.get('/auth/test');
+        return res.data;
+    } catch (err) {
+        if (err.response?.status === 403) {
+            throw new Error('❌ 접근 실패 - 유효한 사용자 아님');
+        } else {
+            throw new Error('❌ 서버 오류');
+        }
     }
 }

@@ -1,45 +1,62 @@
 // src/pages/Register.jsx
 import React, { useState } from 'react';
-import { registerUser } from '../api/userApi';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [nickname, setNickname] = useState('');
+    const navigate = useNavigate();
+    const [form, setForm] = useState({ email: '', password: '', nickname: '' });
     const [message, setMessage] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const success = await registerUser({ email, password, nickname });
-        if (success) {
-            setMessage('✅ 회원가입 성공!');
-            setEmail('');
-            setPassword('');
-            setNickname('');
-        } else {
-            setMessage('❌ 회원가입 실패! 입력값 확인 또는 중복 이메일 확인');
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
+    };
+
+    const handleRegister = async () => {
+        try {
+            const res = await fetch('http://localhost:8080/api/users/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form)
+            });
+
+            if (res.ok) {
+                setMessage('✅ 회원가입 성공! 인증 메일을 발송합니다.');
+                navigate(`/email/send?email=${form.email}`); // 🔁 다음 페이지로 이동
+            } else {
+                const data = await res.json();
+                setMessage(`❌ ${data.message || '회원가입 실패'}`);
+            }
+        } catch (e) {
+            setMessage('❌ 서버 오류 발생');
         }
     };
 
     return (
         <div style={{ padding: 30 }}>
-            <h2>회원가입</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>이메일:</label><br />
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
-                <div>
-                    <label>비밀번호:</label><br />
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                </div>
-                <div>
-                    <label>닉네임:</label><br />
-                    <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
-                </div>
-                <br />
-                <button type="submit">회원가입</button>
-            </form>
+            <h2>✍️ 회원가입</h2>
+            <input
+                type="email"
+                name="email"
+                placeholder="이메일"
+                value={form.email}
+                onChange={handleChange}
+            /><br /><br />
+            <input
+                type="password"
+                name="password"
+                placeholder="비밀번호"
+                value={form.password}
+                onChange={handleChange}
+            /><br /><br />
+            <input
+                type="text"
+                name="nickname"
+                placeholder="닉네임"
+                value={form.nickname}
+                onChange={handleChange}
+            /><br /><br />
+            <button onClick={handleRegister}>회원가입</button>
             <p>{message}</p>
         </div>
     );
