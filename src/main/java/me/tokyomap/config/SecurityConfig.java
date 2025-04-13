@@ -29,6 +29,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
         http
+                .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
                 .headers(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form.disable()) //로그인 패스워드 로그 삭제

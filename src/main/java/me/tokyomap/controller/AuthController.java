@@ -34,7 +34,7 @@ public class AuthController {
 
     @SecurityRequirement(name = "bearerAuth") // Swagger에서 Authorize 버튼 인식용
     @Operation(summary = "JWT 로그인 테스트용", description = "토큰이 있어야 호출 가능")
-    @GetMapping("/api/auth/test")
+    @GetMapping("/test")
     public ResponseEntity<String> testJwtAuthentication(Authentication authentication) {
         String email = authentication.getName();
         return ResponseEntity.ok("JWT 인증 성공! 로그인한 유저: " + email);
@@ -43,7 +43,7 @@ public class AuthController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "관리자 전용 API", description = "ADMIN 권한이 있어야 호출 가능합니다.")
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/api/admin/only")
+    @GetMapping("/admin/only")
     public ResponseEntity<String> adminOnly() {
         return ResponseEntity.ok("관리자 권한 확인 성공! 👑");
     }

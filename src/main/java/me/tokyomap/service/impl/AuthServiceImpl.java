@@ -51,6 +51,6 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole().name());
         Date expiresAt = jwtTokenProvider.getExpirationDate();
 
-        return new LoginResponseDto(token, expiresAt);
+        return new LoginResponseDto(token, expiresAt, user.getRole().name());
     }
 }

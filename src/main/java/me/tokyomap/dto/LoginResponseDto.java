@@ -15,4 +15,7 @@ public class LoginResponseDto {
 
     @Schema(description = "토큰 만료 시각", example = "2025-04-12T13:40:00.000+09:00")
     private Date expiresAt;
+
+    @Schema(description = "사용자 권한", example = "USER") // ✅ 추가
+    private String role;  // ← String으로 받되, Enum에서 이름을 추출해 전달
 }
