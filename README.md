@@ -57,6 +57,14 @@ Spring Boot + React を使用した東京のグルメ検索サービスのバッ
 
 ```
 tokyo-map-portfolio/
+├── src/                  # Spring Boot バックエンド
+├── frontend/             # React フロントエンド
+├── postman/              # Postman テストコレクション
+│   └── tokyomap-api-testset-v1.json
+└── README.md
+```
+
+tokyo-map-portfolio/
 ├── backend/              # Spring Boot バックエンド
 ├── frontend/             # React フロントエンド
 ├── postman/              # Postman テストコレクション
