@@ -1,0 +1,210 @@
+{
+	"info": {
+		"_postman_id": "e1274be8-dcb0-4cc8-aadd-b69b5a5420fe",
+		"name": "TokyoMap API Test",
+		"description": "東京グルメマップ ポートフォリオAPIテストセット\n\n- Spring Boot + JWT認証を使用したバックエンドAPI\n    \n- ユーザー登録、メール認証、ログイン、ロールによるアクセス制御を含む\n    \n- Postman環境変数「accessToken」で自動認証可能",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42956063"
+	},
+	"item": [
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"test@example.com\",\r\n  \"password\": \"test1234\",\r\n  \"nickname\": \"테스트유저\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/users/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"users",
+						"register"
+					]
+				},
+				"description": "ユーザー登録API\n\n- メールアドレス、パスワード、ニックネームで新規ユーザーを登録\n    \n- パスワードはサーバー側でハッシュ化される\n    \n- 登録後、emailVerifiedはfalseの状態"
+			},
+			"response": []
+		},
+		{
+			"name": "VerificationEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/email/send?email=test@example.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"email",
+						"send"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "test@example.com"
+						}
+					]
+				},
+				"description": "メール認証コード送信API\n\n- ユーザーの登録済みメールアドレスに、6桁の認証コードを送信します。\n    \n- 認証コードはランダムに生成され、データベースに保存されます。\n    \n- 有効期限は10分間です。\n    \n- 認証コードを使って本人確認を行う前提のステップです。"
+			},
+			"response": []
+		},
+		{
+			"name": "verifyEmailCode",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"test@example.com\",\r\n  \"code\": \"xxxxxx\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/email/verify",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"email",
+						"verify"
+					]
+				},
+				"description": "認証コード確認API\n\n- メールアドレスと6桁の認証コードを受け取り、コードの一致と有効期限を検証します。\n    \n- 成功時、ユーザーのemailVerifiedフラグがtrueに更新されます。\n    \n- 認証コードの有効期限が切れている場合やコードが一致しない場合はエラーが返されます。"
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json();\r",
+							"pm.environment.set(\"accessToken\", res.accessToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"sheris1@naver.com\",\r\n  \"password\": \"12345678\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "ログインAPI\n\n- メールアドレスとパスワードでログイン\n    \n- 成功時にJWTアクセストークンと有効期限（expiresAt）を返す\n    \n- アクセストークンはPostmanの環境変数に自動保存"
+			},
+			"response": []
+		},
+		{
+			"name": "UserTest",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/auth/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"test"
+					]
+				},
+				"description": "一般ユーザー用API\n\n- ログイン済みのユーザーのみアクセス可能\n    \n- Authorizationヘッダーに「Bearer {{accessToken}}」が必要"
+			},
+			"response": []
+		},
+		{
+			"name": "AdminTest",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/auth/admin/only",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"admin",
+						"only"
+					]
+				},
+				"description": "管理者専用API\n\n- ロールがADMINのユーザーのみアクセス可能\n    \n- 一般ユーザーでアクセスすると403 Forbidden"
+			},
+			"response": []
+		}
+	]
+}
