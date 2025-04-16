@@ -45,4 +45,12 @@ public class Restaurant extends BaseTimeEntity {
 
     //영업 시간(ex: "월 ~금 11:00 ~ 22:00")
     private String openingHours;
+
+
+    public Restaurant(String name, String address, Double latitude, Double longitude) {
+        this.name = name;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }
