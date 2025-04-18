@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import me.tokyomap.domain.restaurant.entity.QRestaurant;
 import me.tokyomap.domain.restaurant.entity.Restaurant;
 import me.tokyomap.dto.restaurant.RestaurantSearchRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -17,7 +20,7 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Restaurant> searchByCondition(RestaurantSearchRequestDto requestDto) {
+    public Page<Restaurant> searchByCondition(RestaurantSearchRequestDto requestDto, Pageable pageable) {
         QRestaurant restaurant = QRestaurant.restaurant;
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -51,9 +54,18 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryCustom {
             builder.and(restaurant.openingHours.like("%" + hourStr + "%"));
         }
 
-        return queryFactory
+        List<Restaurant> content = queryFactory
                 .selectFrom(restaurant)
                 .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        long total = queryFactory
+                .selectFrom(restaurant)
+                .where(builder)
+                .fetchCount();
+
+        return new PageImpl<>(content, pageable, total);
     }
 }

@@ -2,9 +2,11 @@ package me.tokyomap.domain.restaurant.repository;
 
 import me.tokyomap.domain.restaurant.entity.Restaurant;
 import me.tokyomap.dto.restaurant.RestaurantSearchRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+
 
 public interface RestaurantRepositoryCustom {
-    List<Restaurant> searchByCondition(RestaurantSearchRequestDto requestDto);
+    Page<Restaurant> searchByCondition(RestaurantSearchRequestDto requestDto, Pageable pageable);
 }

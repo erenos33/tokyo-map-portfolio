@@ -6,7 +6,12 @@ import me.tokyomap.domain.restaurant.entity.Restaurant;
 import me.tokyomap.domain.restaurant.repository.RestaurantRepository;
 import me.tokyomap.dto.restaurant.RestaurantSearchRequestDto;
 import me.tokyomap.dto.restaurant.RestaurantSearchResponseDto;
+import me.tokyomap.exception.CustomException;
+import me.tokyomap.exception.ErrorCode;
+import me.tokyomap.mapper.RestaurantMapper;
 import me.tokyomap.service.RestaurantService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,39 +25,22 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
     @Override
-    public List<RestaurantSearchResponseDto> searchRestaurants(RestaurantSearchRequestDto requestDto) {
+    public Page<RestaurantSearchResponseDto> searchRestaurants(RestaurantSearchRequestDto requestDto, Pageable pageable) {
         log.info("🔍 최종 category 조건: {}", requestDto.getCategory());
         log.info("📍 최종 city 조건: {}", requestDto.getCity());
         log.info("🕒 최종 openNow 조건: {}", requestDto.getOpenNow());
 
 
-        List<Restaurant> result = restaurantRepository.searchByCondition(requestDto);
+        Page<Restaurant> result = restaurantRepository.searchByCondition(requestDto, pageable);
 
-        return result.stream()
-                .map(r -> RestaurantSearchResponseDto.builder()
-                        .id(r.getId())
-                        .name(r.getName())
-                        .address(r.getAddress())
-                        .latitude(r.getLatitude())
-                        .longitude(r.getLongitude())
-                        .category(r.getCategory())
-                        .build()
-                )
-                .collect(Collectors.toList());
+        return result.map(RestaurantMapper::toDto);
     }
 
     @Override
     public RestaurantSearchResponseDto getRestaurantById(Long id) {
         Restaurant r = restaurantRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("음식점을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
-        return RestaurantSearchResponseDto.builder()
-                .id(r.getId())
-                .name(r.getName())
-                .address(r.getAddress())
-                .latitude(r.getLatitude())
-                .longitude(r.getLongitude())
-                .category(r.getCategory())
-                .build();
+        return RestaurantMapper.toDto(r);
     }
 }

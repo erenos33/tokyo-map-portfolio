@@ -13,6 +13,9 @@ public enum ErrorCode {
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송에 실패했습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
 
+    // ✅ 음식점 관련
+    RESTAURANT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 음식점을 찾을 수 없습니다."),
+
 
     // ✅ 인증 관련
     INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "인증 코드가 올바르지 않습니다."),
