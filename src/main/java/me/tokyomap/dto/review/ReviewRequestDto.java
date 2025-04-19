@@ -15,11 +15,7 @@ public class ReviewRequestDto {
 
     @Schema(description = "음식점 ID", example = "10")
     @NonNull
-    private Long RestaurantId;
-
-    @Schema(description = "사용자 ID", example = "5")
-    @NonNull
-    private Long userId;
+    private Long restaurantId;
 
     @Schema(description = "리뷰 본문", example = "정말 맛있어요!")
     @Size(max = 1000)

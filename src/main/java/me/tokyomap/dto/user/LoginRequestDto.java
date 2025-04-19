@@ -11,7 +11,7 @@ import lombok.Setter;
 @Schema(description = "로그인 요청 DTO")
 public class LoginRequestDto {
 
-    @Schema(description = "사용자 이메일 주소", example = "test@example.com")
+    @Schema(description = "사용자 이메일 주소", example = "erenos33@gmail.com")
     @Email
     @NotBlank
     private String email;

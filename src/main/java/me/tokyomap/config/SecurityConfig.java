@@ -52,7 +52,9 @@ public class SecurityConfig {
                                 "/api/users/**",
                                 "/api/email/send",
                                 "/api/email/verify",
-                                "/api/restaurants/**",
+                                "/api/restaurants/*/reviews",
+                                "/api/reviews/*/likes/count",
+                                "/api/restaurants/*/reviews/statistics",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/h2-console/**"
