@@ -22,6 +22,10 @@ public enum ErrorCode {
     ALREADY_LIKED_REVIEW(HttpStatus.BAD_REQUEST, "이미 좋아요를 누른 리뷰입니다."),
     REVIEW_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요한 리뷰가 없습니다."),
 
+    // ✅ 즐겨찾기 관련
+    ALREADY_FAVORITED(HttpStatus.CONFLICT, "이미 즐겨찾기한 음식점입니다."),
+    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "즐겨찾기한 기록이 없습니다."),
+
 
     // ✅ 인증 관련
     INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "인증 코드가 올바르지 않습니다."),
