@@ -3,11 +3,14 @@ package me.tokyomap.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -34,4 +37,24 @@ public class GlobalExceptionHandler {
         response.put("message", "서버 내부 오류가 발생했습니다.");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<String> errorMessages = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(fieldError -> fieldError.getField() + " : " + fieldError.getDefaultMessage())
+                .collect(Collectors.toList());
+
+        ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("errorCode", errorCode.name());
+        response.put("messages", errorMessages); // 복수 형태로!
+
+        return new ResponseEntity<>(response, errorCode.getHttpStatus());
+    }
+
+
+
 }
