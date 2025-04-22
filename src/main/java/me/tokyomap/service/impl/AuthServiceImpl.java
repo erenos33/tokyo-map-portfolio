@@ -11,6 +11,7 @@ import me.tokyomap.exception.CustomException;
 import me.tokyomap.exception.ErrorCode;
 import me.tokyomap.security.JwtTokenProvider;
 import me.tokyomap.service.AuthService;
+import me.tokyomap.util.EntityFinder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,9 +34,7 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponseDto login(String email, String password) {
 
         //1. 이메일로 유저 검색
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
+        User user = EntityFinder.getUserOrThrow(userRepository, email);
 
         //2. 이메일 인증 확인
         if (!user.isEmailVerified()) {

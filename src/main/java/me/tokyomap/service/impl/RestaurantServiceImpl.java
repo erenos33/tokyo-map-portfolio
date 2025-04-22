@@ -10,6 +10,7 @@ import me.tokyomap.exception.CustomException;
 import me.tokyomap.exception.ErrorCode;
 import me.tokyomap.mapper.RestaurantMapper;
 import me.tokyomap.service.RestaurantService;
+import me.tokyomap.util.EntityFinder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,10 +27,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public Page<RestaurantSearchResponseDto> searchRestaurants(RestaurantSearchRequestDto requestDto, Pageable pageable) {
-        log.info("🔍 최종 category 조건: {}", requestDto.getCategory());
-        log.info("📍 최종 city 조건: {}", requestDto.getCity());
-        log.info("🕒 최종 openNow 조건: {}", requestDto.getOpenNow());
-
 
         Page<Restaurant> result = restaurantRepository.searchByCondition(requestDto, pageable);
 
@@ -38,8 +35,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public RestaurantSearchResponseDto getRestaurantById(Long id) {
-        Restaurant r = restaurantRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
+        Restaurant r = EntityFinder.getRestaurantOrThrow(restaurantRepository, id);
 
         return RestaurantMapper.toDto(r);
     }

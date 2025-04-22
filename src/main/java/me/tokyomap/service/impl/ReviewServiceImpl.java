@@ -17,14 +17,12 @@ import me.tokyomap.exception.CustomException;
 import me.tokyomap.exception.ErrorCode;
 import me.tokyomap.mapper.ReviewMapper;
 import me.tokyomap.service.ReviewService;
+import me.tokyomap.util.EntityFinder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -44,12 +42,10 @@ public class ReviewServiceImpl implements ReviewService {
         // TODO: 리뷰에 이미지 첨부 기능 (S3 연동) 확장 고려
 
         //유저 검증
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = EntityFinder.getUserOrThrow(userRepository, email);
 
         //음식점 검증
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId())
-                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
+        Restaurant restaurant = EntityFinder.getRestaurantOrThrow(restaurantRepository, dto.getRestaurantId());
 
         //Review 엔티티 생성
         Review review = Review.builder()
@@ -64,7 +60,6 @@ public class ReviewServiceImpl implements ReviewService {
 
         //저장
         Review saved = reviewRepository.save(review);
-
         return ReviewMapper.toDto(saved);
     }
 
@@ -73,8 +68,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto dto, String email) {
 
         //리뷰 조회
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        Review review = EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
 
         //작성자 검증
         if(!review.getUser().getEmail().equals(email)) {
@@ -87,7 +81,6 @@ public class ReviewServiceImpl implements ReviewService {
 
         //지정(flush 보장)
         Review updated = reviewRepository.save(review);
-
         return ReviewMapper.toDto(updated);
     }
 
@@ -95,8 +88,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void deleteReview(Long reviewId, String email) {
 
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        Review review = EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
 
         if(!review.getUser().getEmail().equals(email)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REVIEW_ACCESS);
@@ -106,10 +98,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Page<ReviewResponseDto> getReviewsByRestaurant(Long restaurantId, Pageable pageable) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
-
-
+        EntityFinder.getRestaurantOrThrow(restaurantRepository, restaurantId);
 
         return reviewRepository.findByRestaurantId(restaurantId, pageable)
                 .map(ReviewMapper::toDto);
@@ -122,13 +111,10 @@ public class ReviewServiceImpl implements ReviewService {
 
 
         //사용자 인증
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = EntityFinder.getUserOrThrow(userRepository, email);
 
         //리뷰 존재 확인
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-
+        Review review = EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
 
         //이미 좋아요 했는지 확인
         if (reviewLikeRepository.existsByUserAndReview(user, review)) {
@@ -136,18 +122,15 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         //좋아요 저장
-        ReviewLike like = new ReviewLike(user, review);
-        reviewLikeRepository.save(like);
+        reviewLikeRepository.save(new ReviewLike(user, review));
     }
 
     @Override
     @Transactional(readOnly = false)
     public void unlikeReview(Long reviewId, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = EntityFinder.getUserOrThrow(userRepository, email);
 
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        Review review = EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
 
         ReviewLike like = reviewLikeRepository.findByUserAndReview(user, review)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_LIKE_NOT_FOUND));
@@ -159,8 +142,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public ReviewLikeCountResponseDto countLikesByReview(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        Review review = EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
 
         Long count = reviewLikeRepository.countByReview(review);
 

@@ -13,6 +13,7 @@ import me.tokyomap.dto.favorite.FavoriteRestaurantResponseDto;
 import me.tokyomap.exception.CustomException;
 import me.tokyomap.exception.ErrorCode;
 import me.tokyomap.service.FavoriteService;
+import me.tokyomap.util.EntityFinder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,11 +31,9 @@ public class FavoriteServiceImpl implements FavoriteService {
     @Override
     @Transactional
     public void addFavorite(String email, FavoriteRequestDto requestDto) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = EntityFinder.getUserOrThrow(userRepository, email);
 
-        Restaurant restaurant = restaurantRepository.findById(requestDto.getRestaurantId())
-                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
+        Restaurant restaurant = EntityFinder.getRestaurantOrThrow(restaurantRepository, requestDto.getRestaurantId());
 
         if(favoriteRepository.existsByUserAndRestaurant(user, restaurant)){
             throw new CustomException(ErrorCode.ALREADY_FAVORITED);
@@ -51,11 +50,9 @@ public class FavoriteServiceImpl implements FavoriteService {
     @Override
     @Transactional
     public void removeFavorite(String email, FavoriteRequestDto requestDto) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = EntityFinder.getUserOrThrow(userRepository, email);
 
-        Restaurant restaurant = restaurantRepository.findById(requestDto.getRestaurantId())
-                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
+        Restaurant restaurant = EntityFinder.getRestaurantOrThrow(restaurantRepository, requestDto.getRestaurantId());
 
         Favorite favorite = favoriteRepository.findByUserAndRestaurant(user, restaurant)
                 .orElseThrow(() -> new CustomException(ErrorCode.FAVORITE_NOT_FOUND));
@@ -65,11 +62,10 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public FavoriteCheckResponseDto checkFavorite(String email, Long restaurantId) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = EntityFinder.getUserOrThrow(userRepository, email);
 
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
+        Restaurant restaurant = EntityFinder.getRestaurantOrThrow(restaurantRepository, restaurantId);
+
         boolean liked = favoriteRepository.existsByUserAndRestaurant(user, restaurant);
         return new FavoriteCheckResponseDto(liked);
 
@@ -77,8 +73,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public Page<FavoriteRestaurantResponseDto> getMyFavorites(String email, Pageable pageable) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = EntityFinder.getUserOrThrow(userRepository, email);
 
         return favoriteRepository.findByUser(user, pageable)
                 .map(favorite -> {

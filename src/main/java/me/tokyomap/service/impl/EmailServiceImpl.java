@@ -10,6 +10,7 @@ import me.tokyomap.domain.user.repository.UserRepository;
 import me.tokyomap.exception.CustomException;
 import me.tokyomap.exception.ErrorCode;
 import me.tokyomap.service.EmailService;
+import me.tokyomap.util.EntityFinder;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -32,9 +33,7 @@ public class EmailServiceImpl implements EmailService {
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(10);
 
         //2. 유저 조회
-        User user = userRepository.findByEmail(toEmail)
-                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
+        User user = EntityFinder.getUserOrThrow(userRepository, toEmail);
 
         //3. 인증 코드 저장
         user.updateVerificationCode(verificationCode, expiresAt); //setter 대신 명확한 메서드 사용
@@ -62,8 +61,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void verifyEmailCode(String email, String code) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = EntityFinder.getUserOrThrow(userRepository, email);
 
         //1. 유효시간 만료 확인
         if(user.getVerificationCodeExpiresAt() == null ||

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import me.tokyomap.dto.common.ApiResponse;
 import me.tokyomap.dto.favorite.FavoriteCheckResponseDto;
 import me.tokyomap.dto.favorite.FavoriteRequestDto;
 import me.tokyomap.dto.favorite.FavoriteRestaurantResponseDto;
@@ -29,49 +30,49 @@ public class FavoriteController {
     @PostMapping
     @Operation(summary = "즐겨찾기 등록")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<Void> addFavorite(
+    public ApiResponse<Void> addFavorite(
             @RequestBody @Valid FavoriteRequestDto requestDto,
             Authentication authentication
     ) {
         String email = authentication.getName();
         favoriteService.addFavorite(email, requestDto);
-        return ResponseEntity.ok().build();
+        return ApiResponse.success();
     }
 
     @DeleteMapping
     @Operation(summary = "즐겨찾기 삭제")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<Void> removeFavorite(
+    public ApiResponse<Void> removeFavorite(
             @RequestBody @Valid FavoriteRequestDto requestDto,
             Authentication authentication
     ) {
         String email = authentication.getName();
         favoriteService.removeFavorite(email, requestDto);
-        return ResponseEntity.ok().build();
+        return ApiResponse.success();
     }
 
     @GetMapping("/check")
     @Operation(summary = "특정 음식점 즐겨찾기 여부 확인")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<FavoriteCheckResponseDto> checkFavorite(
+    public ApiResponse<FavoriteCheckResponseDto> checkFavorite(
             @RequestParam Long restaurantId,
             Authentication authentication
     ) {
         String email = authentication.getName();
         FavoriteCheckResponseDto responseDto = favoriteService.checkFavorite(email, restaurantId);
-        return ResponseEntity.ok(responseDto);
+        return ApiResponse.success(responseDto);
     }
 
     @GetMapping("/my")
     @Operation(summary = "내 즐겨찾기 목록 조회 (페이징)")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<Page<FavoriteRestaurantResponseDto>> getMyFavorites(
+    public ApiResponse<Page<FavoriteRestaurantResponseDto>> getMyFavorites(
             Authentication authentication,
             @Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable
     ) {
         String email = authentication.getName();
         Page<FavoriteRestaurantResponseDto> favorites = favoriteService.getMyFavorites(email, pageable);
-        return ResponseEntity.ok(favorites);
+        return ApiResponse.success(favorites);
     }
 
 }
