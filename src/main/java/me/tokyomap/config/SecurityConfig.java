@@ -4,6 +4,7 @@ import me.tokyomap.security.JwtAuthenticationFilter;
 import me.tokyomap.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -43,6 +44,10 @@ public class SecurityConfig {
 
                         // ✅ 로그인 API만 명확히 permitAll
                         .requestMatchers("/api/auth/login").permitAll()
+
+                        // ✅ 댓글 조회는 인증 불필요
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/*/comments").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/*/comments/tree").permitAll()
 
                         // ✅ 테스트용 인증 API
                         .requestMatchers("/api/auth/test").authenticated()

@@ -5,6 +5,8 @@ import lombok.experimental.UtilityClass;
 import me.tokyomap.domain.restaurant.entity.Restaurant;
 import me.tokyomap.domain.restaurant.repository.RestaurantRepository;
 import me.tokyomap.domain.review.entity.Review;
+import me.tokyomap.domain.review.entity.ReviewComment;
+import me.tokyomap.domain.review.repository.ReviewCommentRepository;
 import me.tokyomap.domain.review.repository.ReviewRepository;
 import me.tokyomap.domain.user.entity.User;
 import me.tokyomap.domain.user.repository.UserRepository;
@@ -60,5 +62,10 @@ public class EntityFinder {
     public Review getReviewOrThrow(ReviewRepository repository, Long reviewId) {
         return repository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+    }
+
+    public static ReviewComment getCommentOrThrow(ReviewCommentRepository repository, Long commentId) {
+        return repository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
     }
 }

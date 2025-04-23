@@ -26,6 +26,10 @@ public enum ErrorCode {
     ALREADY_FAVORITED(HttpStatus.CONFLICT, "favorite.already.exists"),
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "favorite.not.found"),
 
+    // ✅ 댓글 관련
+    UNAUTHORIZED_COMMENT_ACCESS(HttpStatus.FORBIDDEN, "comment.unauthorized.access"),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "comment.not.found"),
+
     // ✅ 인증 관련
     INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "verification.code.invalid"),
     EXPIRED_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "verification.code.expired"),
