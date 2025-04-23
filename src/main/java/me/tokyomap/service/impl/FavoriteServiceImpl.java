@@ -12,6 +12,7 @@ import me.tokyomap.dto.favorite.FavoriteRequestDto;
 import me.tokyomap.dto.favorite.FavoriteRestaurantResponseDto;
 import me.tokyomap.exception.CustomException;
 import me.tokyomap.exception.ErrorCode;
+import me.tokyomap.mapper.FavoriteMapper;
 import me.tokyomap.service.FavoriteService;
 import me.tokyomap.util.EntityFinder;
 import org.springframework.data.domain.Page;
@@ -76,15 +77,6 @@ public class FavoriteServiceImpl implements FavoriteService {
         User user = EntityFinder.getUserOrThrow(userRepository, email);
 
         return favoriteRepository.findByUser(user, pageable)
-                .map(favorite -> {
-                    Restaurant restaurant = favorite.getRestaurant();
-                    return FavoriteRestaurantResponseDto.builder()
-                            .restaurantId(restaurant.getId())
-                            .name(restaurant.getName())
-                            .address(restaurant.getAddress())
-                            .averageRating(restaurant.getRating())
-                            .reviewCount(restaurant.getReviewCount())
-                            .build();
-                });
+                .map(FavoriteMapper::toDto);
     }
 }

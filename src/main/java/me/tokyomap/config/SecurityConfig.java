@@ -54,6 +54,7 @@ public class SecurityConfig {
                                 "/api/email/verify",
                                 "/api/restaurants/**",
                                 "/api/reviews/*/likes/count",
+                                "/api/locations/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/h2-console/**"

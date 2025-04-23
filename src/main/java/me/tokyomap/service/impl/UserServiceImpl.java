@@ -7,6 +7,7 @@ import me.tokyomap.domain.user.role.UserRole;
 import me.tokyomap.dto.user.UserRegisterRequestDto;
 import me.tokyomap.exception.CustomException;
 import me.tokyomap.exception.ErrorCode;
+import me.tokyomap.mapper.UserMapper;
 import me.tokyomap.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,7 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         //3. User 엔티티 생성
-        User user = User.builder()
-                .email(requestDto.getEmail())
-                .password(encodedPassword)
-                .nickname(requestDto.getNickname())
-                .emailVerified(false)
-                .role(UserRole.USER)
-                .build();
+        User user = UserMapper.toEntity(requestDto, passwordEncoder);
 
         //4.저장
         userRepository.save(user);
