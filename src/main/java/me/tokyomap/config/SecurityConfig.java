@@ -60,6 +60,7 @@ public class SecurityConfig {
                                 "/api/restaurants/**",
                                 "/api/reviews/*/likes/count",
                                 "/api/locations/**",
+                                "/api/maps/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/h2-console/**"
