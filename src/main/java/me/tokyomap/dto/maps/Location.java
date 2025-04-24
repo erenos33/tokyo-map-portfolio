@@ -1,0 +1,9 @@
+package me.tokyomap.dto.maps;
+
+import lombok.Data;
+
+@Data
+public class Location {
+    private double lat;
+    private double lng;
+}
