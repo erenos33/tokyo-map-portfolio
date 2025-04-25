@@ -65,4 +65,19 @@ public class GoogleMapsService {
                         .bodyToMono(GooglePlaceResponseDto.class)
                 );
     }
+
+    public Mono<GooglePlaceResponseDto> searchByLocation(String keyword, double lat, double lng, int radius) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/place/textsearch/json")
+                        .queryParam("query", keyword)
+                        .queryParam("location", lat + "," + lng)
+                        .queryParam("radius", radius)
+                        .queryParam("type", "restaurant")
+                        .queryParam("key", apiKey)
+                        .build()
+                )
+                .retrieve()
+                .bodyToMono(GooglePlaceResponseDto.class);
+    }
 }
