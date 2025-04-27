@@ -7,6 +7,10 @@ import EmailVerify from "./pages/EmailVerify";
 import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
 import RequireAuth from "./components/RequireAuth";
+import RestaurantPage from './pages/RestaurantPage';
+import ReviewCreatePage from './pages/ReviewCreatePage'; // ✅ 추가
+import ReviewListPage from './pages/ReviewListPage'; // ✅ 추가
+import ReviewEditPage from './pages/ReviewEditPage'; // ✅ 추가
 
 export default function App() {
     return (
@@ -30,6 +34,24 @@ export default function App() {
                     element={
                         <RequireAuth>
                             <AdminPage />
+                        </RequireAuth>
+                    }
+                />
+                <Route path="/restaurant" element={<RestaurantPage />} />
+                <Route
+                    path="/review/create"
+                    element={
+                        <RequireAuth>
+                            <ReviewCreatePage />
+                        </RequireAuth>
+                    }
+                /> {/* ✅ 추가 */}
+                <Route path="/review/list" element={<ReviewListPage />} /> {/* ✅ 추가 */}
+                <Route
+                    path="/review/edit/:id"
+                    element={
+                        <RequireAuth>
+                            <ReviewEditPage />
                         </RequireAuth>
                     }
                 />

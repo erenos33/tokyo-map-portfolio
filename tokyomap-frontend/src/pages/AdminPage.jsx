@@ -1,3 +1,4 @@
+// 수정된 AdminPage.jsx
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
@@ -9,8 +10,8 @@ const AdminPage = () => {
     useEffect(() => {
         const fetchAdminPage = async () => {
             try {
-                const response = await axiosInstance.get('http://localhost:8080/api/admin/only');
-                setMessage(response.data);
+                const response = await axiosInstance.get('http://localhost:8080/api/auth/admin/only');
+                setMessage(response.data.data); // 수정된 부분
             } catch (error) {
                 setMessage('❌ 접근 실패 - 관리자 권한 필요');
             }

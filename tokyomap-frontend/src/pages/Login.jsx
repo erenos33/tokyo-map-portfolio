@@ -1,3 +1,4 @@
+// 수정된 Login.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,12 +17,13 @@ export default function Login() {
             });
 
             if (res.ok) {
-                const data = await res.json();
-                localStorage.setItem('accessToken', data.accessToken);
-                localStorage.setItem('expiresAt', data.expiresAt);
-                localStorage.setItem('userRole', data.role); // 🔥 권한도 저장
+                const result = await res.json();
+                const { accessToken, expiresAt, role } = result.data; // 수정된 부분
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('expiresAt', expiresAt);
+                localStorage.setItem('userRole', role);
                 setMessage('✅ 로그인 성공!');
-                navigate("/"); // 로그인 후 메인 페이지로 이동
+                navigate("/");
             } else {
                 setMessage('❌ 로그인 실패');
             }

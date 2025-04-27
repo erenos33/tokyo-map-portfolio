@@ -1,4 +1,4 @@
-// src/pages/EmailVerify.jsx
+// 수정된 EmailVerify.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -7,7 +7,6 @@ export default function EmailVerify() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // 이메일은 localStorage 또는 이전 페이지에서 받아오기
     const [email] = useState(location.state?.email || localStorage.getItem('pendingEmail') || '');
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
@@ -27,8 +26,8 @@ export default function EmailVerify() {
                 }
             );
 
-            // 인증 성공 시 accessToken, role 저장 후 메인으로
-            const { accessToken, expiresAt, role } = response.data;
+            const result = response.data; // 수정된 부분
+            const { accessToken, expiresAt, role } = result.data; // 수정된 부분
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('expiresAt', expiresAt);
             localStorage.setItem('userRole', role);

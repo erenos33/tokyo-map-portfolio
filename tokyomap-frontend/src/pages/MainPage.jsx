@@ -24,12 +24,23 @@ export default function MainPage() {
                         <button onClick={() => navigate('/admin')}>🛠 관리자 전용 페이지</button>
                     )}
                     <br /><br />
+                    <button onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
+                    <br /><br />
+                    <button onClick={() => navigate('/review/create')}>✍️ 리뷰 작성하기</button> {/* ✅ 추가 */}
+                    <br /><br />
+                    <button onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button> {/* ✅ 추가 */}
+                    <br /><br />
+                    <br /><br />
                     <button onClick={handleLogout}>📕 로그아웃</button>
                 </>
             ) : (
                 <>
                     <button onClick={() => navigate('/login')}>🔐 로그인 하러가기</button>
                     <button onClick={() => navigate('/register')}>✍️ 회원가입</button>
+                    <br /><br />
+                    <button onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
+                    <br /><br />
+                    <button onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button> {/* ✅ 추가 */}
                 </>
             )}
         </div>

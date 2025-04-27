@@ -1,3 +1,4 @@
+// 수정된 UserPage.jsx
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +11,7 @@ const UserPage = () => {
         const fetchUserPage = async () => {
             try {
                 const response = await axiosInstance.get('http://localhost:8080/api/auth/test');
-                setMessage(response.data);
+                setMessage(response.data.data); // 수정된 부분
             } catch (error) {
                 setMessage('❌ 접근 실패 - 유효한 사용자 아님');
             }

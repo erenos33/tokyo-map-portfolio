@@ -1,3 +1,4 @@
+// 최종 수정된 authApi.js
 export async function fetchUserPage() {
     const token = localStorage.getItem('accessToken');
     try {
@@ -6,7 +7,12 @@ export async function fetchUserPage() {
                 Authorization: `Bearer ${token}`,
             },
         });
-        return res.ok ? await res.text() : '❌ 접근 실패 (사용자)';
+        if (res.ok) {
+            const result = await res.json();
+            return result.data;
+        } else {
+            return '❌ 접근 실패 (사용자)';
+        }
     } catch (e) {
         return '❌ 서버 오류';
     }
@@ -15,12 +21,17 @@ export async function fetchUserPage() {
 export async function fetchAdminPage() {
     const token = localStorage.getItem('accessToken');
     try {
-        const res = await fetch('http://localhost:8080/api/auth/api/admin/only', {
+        const res = await fetch('http://localhost:8080/api/auth/admin/only', {  // ✅ 경로 수정
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
-        return res.ok ? await res.text() : '❌ 접근 실패 (관리자 전용)';
+        if (res.ok) {
+            const result = await res.json();
+            return result.data; // 🔥 data 꺼내기
+        } else {
+            return '❌ 접근 실패 (관리자 전용)';
+        }
     } catch (e) {
         return '❌ 서버 오류';
     }
