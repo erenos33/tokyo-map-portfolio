@@ -27,4 +27,7 @@ public class RestaurantSearchResponseDto {
 
     @Schema(description = "카테고리", example = "스시")
     private String category;
+
+    @Schema(description = "영업시간", example = "월~금 11:00~22:00")
+    private String openingHours; // ✅ 추가
 }

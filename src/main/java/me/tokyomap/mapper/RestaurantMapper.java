@@ -12,6 +12,7 @@ public class RestaurantMapper {
                 .latitude(r.getLatitude())
                 .longitude(r.getLongitude())
                 .category(r.getCategory())
+                .openingHours(r.getOpeningHours())
                 .build();
     }
 }

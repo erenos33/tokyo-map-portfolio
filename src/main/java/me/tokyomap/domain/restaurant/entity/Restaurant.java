@@ -44,6 +44,7 @@ public class Restaurant extends BaseTimeEntity {
     private Boolean isDeliveryAvailable; //배달 가능 여부
 
     //영업 시간(ex: "월 ~금 11:00 ~ 22:00")
+    @Column(name = "opening_hours")
     private String openingHours;
 
 
