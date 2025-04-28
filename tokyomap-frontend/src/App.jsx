@@ -1,3 +1,4 @@
+// src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import Login from "./pages/Login";
@@ -6,11 +7,15 @@ import EmailSend from "./pages/EmailSend";
 import EmailVerify from "./pages/EmailVerify";
 import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
+import RestaurantPage from "./pages/RestaurantPage";
+import ReviewCreatePage from "./pages/ReviewCreatePage";
+import ReviewListPage from "./pages/ReviewListPage";
+import ReviewEditPage from "./pages/ReviewEditPage";
+import ReviewCommentPage from "./pages/ReviewCommentPage";
+import ReviewCommentViewPage from "./pages/ReviewCommentViewPage";
+import FavoritePage from "./pages/FavoritePage";
+import LocationPage from "./pages/LocationPage"; // ✅ 추가
 import RequireAuth from "./components/RequireAuth";
-import RestaurantPage from './pages/RestaurantPage';
-import ReviewCreatePage from './pages/ReviewCreatePage'; // ✅ 추가
-import ReviewListPage from './pages/ReviewListPage'; // ✅ 추가
-import ReviewEditPage from './pages/ReviewEditPage'; // ✅ 추가
 
 export default function App() {
     return (
@@ -21,40 +26,16 @@ export default function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/email/send" element={<EmailSend />} />
                 <Route path="/email/verify" element={<EmailVerify />} />
-                <Route
-                    path="/user"
-                    element={
-                        <RequireAuth>
-                            <UserPage />
-                        </RequireAuth>
-                    }
-                />
-                <Route
-                    path="/admin"
-                    element={
-                        <RequireAuth>
-                            <AdminPage />
-                        </RequireAuth>
-                    }
-                />
+                <Route path="/user" element={<RequireAuth><UserPage /></RequireAuth>} />
+                <Route path="/admin" element={<RequireAuth><AdminPage /></RequireAuth>} />
                 <Route path="/restaurant" element={<RestaurantPage />} />
-                <Route
-                    path="/review/create"
-                    element={
-                        <RequireAuth>
-                            <ReviewCreatePage />
-                        </RequireAuth>
-                    }
-                /> {/* ✅ 추가 */}
-                <Route path="/review/list" element={<ReviewListPage />} /> {/* ✅ 추가 */}
-                <Route
-                    path="/review/edit/:id"
-                    element={
-                        <RequireAuth>
-                            <ReviewEditPage />
-                        </RequireAuth>
-                    }
-                />
+                <Route path="/review/create" element={<RequireAuth><ReviewCreatePage /></RequireAuth>} />
+                <Route path="/review/list" element={<ReviewListPage />} />
+                <Route path="/review/edit/:id" element={<RequireAuth><ReviewEditPage /></RequireAuth>} />
+                <Route path="/review/comments" element={<RequireAuth><ReviewCommentPage /></RequireAuth>} />
+                <Route path="/review/comments/view" element={<ReviewCommentViewPage />} />
+                <Route path="/favorites" element={<RequireAuth><FavoritePage /></RequireAuth>} />
+                <Route path="/locations" element={<LocationPage />} /> {/* ✅ 추가 */}
             </Routes>
         </BrowserRouter>
     );

@@ -16,6 +16,7 @@ export default function MainPage() {
     return (
         <div style={{ padding: 30 }}>
             <h1>🍜 도쿄 맛집 포트폴리오 메인페이지</h1>
+
             {token ? (
                 <>
                     <p>🔐 로그인된 사용자입니다</p>
@@ -26,10 +27,17 @@ export default function MainPage() {
                     <br /><br />
                     <button onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
                     <br /><br />
-                    <button onClick={() => navigate('/review/create')}>✍️ 리뷰 작성하기</button> {/* ✅ 추가 */}
+                    <button onClick={() => navigate('/review/create')}>✍️ 리뷰 작성하기</button>
                     <br /><br />
-                    <button onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button> {/* ✅ 추가 */}
+                    <button onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button>
                     <br /><br />
+                    <button onClick={() => navigate('/review/comments')}>💬 리뷰 댓글 작성</button>
+                    <br /><br />
+                    <button onClick={() => navigate('/review/comments/view')}>📖 리뷰 댓글 조회</button>
+                    <br /><br />
+                    <button onClick={() => navigate('/favorites')}>⭐ 즐겨찾기 관리</button>
+                    <br /><br />
+                    <button onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button> {/* 여기 그대로 */}
                     <br /><br />
                     <button onClick={handleLogout}>📕 로그아웃</button>
                 </>
@@ -40,7 +48,11 @@ export default function MainPage() {
                     <br /><br />
                     <button onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
                     <br /><br />
-                    <button onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button> {/* ✅ 추가 */}
+                    <button onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button>
+                    <br /><br />
+                    <button onClick={() => navigate('/review/comments/view')}>📖 리뷰 댓글 조회</button>
+                    <br /><br />
+                    <button onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button> {/* ✅ 비로그인도 보여줌 */}
                 </>
             )}
         </div>
