@@ -15,6 +15,7 @@ public enum ErrorCode {
 
     // ✅ 음식점 관련
     RESTAURANT_NOT_FOUND(HttpStatus.NOT_FOUND, "restaurant.not.found"),
+    RESTAURANT_ALREADY_REGISTERED(HttpStatus.CONFLICT, "restaurant.already.registered"),
 
     // ✅ 리뷰 관련
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "review.not.found"),

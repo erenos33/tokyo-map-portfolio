@@ -13,21 +13,18 @@ public class RestaurantSearchResponseDto {
     @Schema(description = "음식점 ID", example = "1")
     private Long id;
 
-    @Schema(description = "이름", example = "스시진")
+    @Schema(description = "음식점 이름", example = "Sushi Tokyo")
     private String name;
 
-    @Schema(description = "주소", example = "도쿄 신주쿠구")
+    @Schema(description = "주소", example = "Tokyo, Shibuya, ...")
     private String address;
 
-    @Schema(description = "위도", example = "35.6895")
+    @Schema(description = "위도", example = "35.658034")
     private Double latitude;
 
-    @Schema(description = "경도", example = "139.6917")
+    @Schema(description = "경도", example = "139.701636")
     private Double longitude;
 
-    @Schema(description = "카테고리", example = "스시")
-    private String category;
-
-    @Schema(description = "영업시간", example = "월~금 11:00~22:00")
-    private String openingHours; // ✅ 추가
+    @Schema(description = "평점", example = "4.5")
+    private Double rating;
 }

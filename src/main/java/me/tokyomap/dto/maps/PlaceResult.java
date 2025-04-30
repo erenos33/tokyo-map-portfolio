@@ -21,4 +21,8 @@ public class PlaceResult {
     @Schema(description = "위치 정보 (geometry)")
     private Geometry geometry;
 
+    @Schema(description = "Google Place ID", example = "ChIJN1t_tDeuEmsRUsoyG83frY4")
+    @JsonProperty("place_id")
+    private String placeId;
+
 }

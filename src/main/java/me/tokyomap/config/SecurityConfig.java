@@ -33,31 +33,26 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
                 .headers(AbstractHttpConfigurer::disable)
-                .formLogin(form -> form.disable()) //로그인 패스워드 로그 삭제
+                .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ 관리자 전용 API
+                        // 관리자 전용
                         .requestMatchers("/api/auth/admin/**").hasRole("ADMIN")
 
-                        // ✅ 로그인 API만 명확히 permitAll
+                        // 인증 없이 접근 허용
                         .requestMatchers("/api/auth/login").permitAll()
-
-                        // ✅ 댓글 조회는 인증 불필요
                         .requestMatchers(HttpMethod.GET, "/api/reviews/*/comments").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/reviews/*/comments/tree").permitAll()
-
-                        // ✅ 테스트용 인증 API
-                        .requestMatchers("/api/auth/test").authenticated()
-
-                        // ✅ 비회원 접근 허용 API
+                        .requestMatchers(HttpMethod.GET, "/api/restaurants/search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/restaurants/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/restaurants/location").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/restaurants/location/next").permitAll()
                         .requestMatchers(
                                 "/api/users/**",
                                 "/api/email/send",
                                 "/api/email/verify",
-                                "/api/restaurants/**",
                                 "/api/reviews/*/likes/count",
                                 "/api/locations/**",
                                 "/api/maps/**",
@@ -66,12 +61,16 @@ public class SecurityConfig {
                                 "/h2-console/**"
                         ).permitAll()
 
-                        // ✅ 그 외는 인증 필요
+                        // 그 외 요청 (등록, 내 등록 조회, 삭제 등)는 인증 필요
+                        .requestMatchers(HttpMethod.POST, "/api/restaurants").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/restaurants/mine").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/restaurants/{id}").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/restaurants/register/google").authenticated()
                         .anyRequest().authenticated()
                 )
 
-//나머지는 인증 필요
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

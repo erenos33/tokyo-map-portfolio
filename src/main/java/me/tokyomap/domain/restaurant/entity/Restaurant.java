@@ -1,9 +1,11 @@
 package me.tokyomap.domain.restaurant.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.tokyomap.domain.common.BaseTimeEntity;
+import me.tokyomap.domain.user.entity.User;
 
 @Entity
 @Getter
@@ -34,6 +36,8 @@ public class Restaurant extends BaseTimeEntity {
 
     // 추가 정보
     private String priceRange; //가격대 (ex: "1000엔)
+
+    @Column(name = "category")
     private String category; //음식 종류(ex: 라멘, 이자카야, 돈카츠)
 
     private Double rating; //별점 평균(nullable)
@@ -48,10 +52,22 @@ public class Restaurant extends BaseTimeEntity {
     private String openingHours;
 
 
-    public Restaurant(String name, String address, Double latitude, Double longitude) {
+    @Column(unique = true)
+    private String placeId; // 🔸 Google Place ID
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "registered_by")
+    private User registeredBy;
+
+
+    @Builder
+    public Restaurant(String name, String address, Double latitude, Double longitude, Double rating, String placeId, User registeredBy) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.rating = rating;
+        this.placeId = placeId;
+        this.registeredBy = registeredBy;
     }
 }

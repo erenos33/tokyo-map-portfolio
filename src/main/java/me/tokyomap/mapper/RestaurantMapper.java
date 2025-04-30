@@ -11,8 +11,7 @@ public class RestaurantMapper {
                 .address(r.getAddress())
                 .latitude(r.getLatitude())
                 .longitude(r.getLongitude())
-                .category(r.getCategory())
-                .openingHours(r.getOpeningHours())
+                .rating(r.getRating())
                 .build();
     }
 }
