@@ -8,13 +8,14 @@ import EmailVerify from "./pages/EmailVerify";
 import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
 import RestaurantPage from "./pages/RestaurantPage";
+import MyRestaurantPage from "./pages/MyRestaurantPage"; // ✅ 내가 등록한 맛집
 import ReviewCreatePage from "./pages/ReviewCreatePage";
 import ReviewListPage from "./pages/ReviewListPage";
 import ReviewEditPage from "./pages/ReviewEditPage";
 import ReviewCommentPage from "./pages/ReviewCommentPage";
 import ReviewCommentViewPage from "./pages/ReviewCommentViewPage";
 import FavoritePage from "./pages/FavoritePage";
-import LocationPage from "./pages/LocationPage"; // ✅ 추가
+import LocationPage from "./pages/LocationPage"; // ✅ 지역 목록
 import RequireAuth from "./components/RequireAuth";
 
 export default function App() {
@@ -29,13 +30,14 @@ export default function App() {
                 <Route path="/user" element={<RequireAuth><UserPage /></RequireAuth>} />
                 <Route path="/admin" element={<RequireAuth><AdminPage /></RequireAuth>} />
                 <Route path="/restaurant" element={<RestaurantPage />} />
+                <Route path="/restaurant/my" element={<RequireAuth><MyRestaurantPage /></RequireAuth>} /> {/* ✅ 내가 등록한 맛집 */}
                 <Route path="/review/create" element={<RequireAuth><ReviewCreatePage /></RequireAuth>} />
                 <Route path="/review/list" element={<ReviewListPage />} />
                 <Route path="/review/edit/:id" element={<RequireAuth><ReviewEditPage /></RequireAuth>} />
                 <Route path="/review/comments" element={<RequireAuth><ReviewCommentPage /></RequireAuth>} />
                 <Route path="/review/comments/view" element={<ReviewCommentViewPage />} />
                 <Route path="/favorites" element={<RequireAuth><FavoritePage /></RequireAuth>} />
-                <Route path="/locations" element={<LocationPage />} /> {/* ✅ 추가 */}
+                <Route path="/locations" element={<LocationPage />} /> {/* ✅ 지역 목록 */}
             </Routes>
         </BrowserRouter>
     );

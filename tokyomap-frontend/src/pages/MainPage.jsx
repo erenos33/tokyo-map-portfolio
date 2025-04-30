@@ -27,6 +27,8 @@ export default function MainPage() {
                     <br /><br />
                     <button onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
                     <br /><br />
+                    <button onClick={() => navigate('/restaurant/my')}>📋 내가 등록한 맛집</button> {/* ✅ 추가 */}
+                    <br /><br />
                     <button onClick={() => navigate('/review/create')}>✍️ 리뷰 작성하기</button>
                     <br /><br />
                     <button onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button>
@@ -37,7 +39,7 @@ export default function MainPage() {
                     <br /><br />
                     <button onClick={() => navigate('/favorites')}>⭐ 즐겨찾기 관리</button>
                     <br /><br />
-                    <button onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button> {/* 여기 그대로 */}
+                    <button onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button>
                     <br /><br />
                     <button onClick={handleLogout}>📕 로그아웃</button>
                 </>
@@ -52,7 +54,7 @@ export default function MainPage() {
                     <br /><br />
                     <button onClick={() => navigate('/review/comments/view')}>📖 리뷰 댓글 조회</button>
                     <br /><br />
-                    <button onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button> {/* ✅ 비로그인도 보여줌 */}
+                    <button onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button>
                 </>
             )}
         </div>
