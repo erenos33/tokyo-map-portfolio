@@ -16,4 +16,5 @@ public class GooglePlaceResponseDto {
     @Schema(description = "다음 페이지 토큰", example = "ATtYBwL1PvFJgW...")
     @JsonProperty("next_page_token")
     private String nextPageToken;
+
  }

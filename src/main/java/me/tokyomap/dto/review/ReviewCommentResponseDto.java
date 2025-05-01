@@ -15,7 +15,11 @@ public record ReviewCommentResponseDto(
         String nickname,
 
         @Schema(description = "작성일자", example = "2025-04-23T12:40:00")
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+
+        @Schema(description = "현재 로그인한 유저가 댓글 작성자인지 여부", example = "true")
+        boolean isAuthor
+
 
 
 ) {

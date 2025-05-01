@@ -24,8 +24,15 @@ public class GoogleMapsController {
     @GetMapping("/search")
     public Mono<GooglePlaceResponseDto> searchFirstPage(
             @RequestParam String keyword,
-            @RequestParam String location) {
-        return googleMapsService.searchFirstPage(keyword, location);
+            @RequestParam String location,
+            @RequestParam(required = false) Double lat,
+            @RequestParam(required = false) Double lng
+    ) {
+        if (lat != null && lng != null) {
+            return googleMapsService.searchByLocation(keyword, lat, lng, 3000);
+        } else {
+            return googleMapsService.searchFirstPage(keyword, location);
+        }
     }
 
     @Operation(summary = "다음 페이지 검색", description = "nextPageToken으로 다음 장소 페이지를 검색합니다. (2초 delay 포함)")

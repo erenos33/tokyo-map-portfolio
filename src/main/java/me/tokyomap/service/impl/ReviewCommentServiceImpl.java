@@ -17,6 +17,8 @@ import me.tokyomap.service.ReviewCommentService;
 import me.tokyomap.util.EntityFinder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,8 +60,11 @@ public class ReviewCommentServiceImpl implements ReviewCommentService {
     public Page<ReviewCommentResponseDto> getCommentsByReviewId(Long reviewId, Pageable pageable) {
         EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = authentication != null ? authentication.getName() : "";
+
         return reviewCommentRepository.findByReviewId(reviewId, pageable)
-                .map(ReviewCommentMapper::toDto);
+                .map(comment -> ReviewCommentMapper.toDto(comment, currentEmail));
     }
 
     @Override

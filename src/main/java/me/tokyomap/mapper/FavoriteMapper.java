@@ -11,8 +11,8 @@ public class FavoriteMapper {
                 .restaurantId(r.getId())
                 .name(r.getName())
                 .address(r.getAddress())
-                .averageRating(r.getRating())
-                .reviewCount(r.getReviewCount())
+                .averageRating(r.getRating() != null ? r.getRating() : 0.0)
+                .reviewCount(r.getReviewCount() != null ? r.getReviewCount() : 0)
                 .build();
     }
 }
