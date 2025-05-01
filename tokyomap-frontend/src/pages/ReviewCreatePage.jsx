@@ -1,4 +1,3 @@
-// ReviewCreatePage.jsx
 import React, { useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
@@ -25,33 +24,51 @@ export default function ReviewCreatePage() {
     };
 
     return (
-        <div style={{ padding: 30 }}>
-            <h2>✍️ 리뷰 작성 페이지</h2>
-            <input
-                type="text"
-                placeholder="음식점 ID"
-                value={restaurantId}
-                onChange={(e) => setRestaurantId(e.target.value)}
-            /><br /><br />
+        <div className="bg-gray-100 min-h-screen py-10 px-4">
+            <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow">
+                <h2 className="text-2xl font-bold mb-6 text-center">✍️ 리뷰 작성 페이지</h2>
 
-            <input
-                type="number"
-                placeholder="별점 (1~5)"
-                min="1"
-                max="5"
-                value={rating}
-                onChange={(e) => setRating(e.target.value)}
-            /><br /><br />
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">음식점 ID</label>
+                    <input
+                        type="text"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
+                        placeholder="ex) 1"
+                        value={restaurantId}
+                        onChange={(e) => setRestaurantId(e.target.value)}
+                    />
+                </div>
 
-            <textarea
-                placeholder="리뷰 내용 작성"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows="5"
-                cols="50"
-            /><br /><br />
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">별점 (1~5)</label>
+                    <input
+                        type="number"
+                        min="1"
+                        max="5"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400"
+                        value={rating}
+                        onChange={(e) => setRating(e.target.value)}
+                    />
+                </div>
 
-            <button onClick={createReview}>리뷰 작성하기</button>
+                <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">리뷰 내용</label>
+                    <textarea
+                        rows="5"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 resize-none"
+                        placeholder="리뷰를 입력하세요"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                    ></textarea>
+                </div>
+
+                <button
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+                    onClick={createReview}
+                >
+                    리뷰 작성하기
+                </button>
+            </div>
         </div>
     );
 }

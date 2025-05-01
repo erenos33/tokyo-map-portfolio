@@ -56,51 +56,55 @@ export default function ReviewCommentViewPage() {
     };
 
     return (
-        <div style={{ padding: 30 }}>
-            <h2>📖 리뷰 댓글 조회 페이지</h2>
+        <div className="bg-gray-100 min-h-screen py-10 px-4">
+            <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow">
+                <h2 className="text-2xl font-bold mb-6 text-center">📖 리뷰 댓글 조회</h2>
 
-            <input
-                type="text"
-                placeholder="댓글을 볼 리뷰 ID 입력"
-                value={reviewId}
-                onChange={(e) => setReviewId(e.target.value)}
-            />
-            <br /><br />
-            <button onClick={fetchComments}>댓글 조회하기</button>
+                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                    <input
+                        type="text"
+                        placeholder="댓글을 볼 리뷰 ID 입력"
+                        value={reviewId}
+                        onChange={(e) => setReviewId(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400"
+                    />
+                    <button className="btn" onClick={fetchComments}>📖 댓글 조회하기</button>
+                </div>
 
-            <div style={{ marginTop: 20 }}>
-                {comments.map((comment) => (
-                    <div key={comment.id} style={{ border: '1px solid #ccc', marginTop: '10px', padding: '10px' }}>
-                        <p>✍️ {comment.content}</p>
-                        <small>작성자: {comment.nickname}</small><br />
-                        <small>작성 시간: {new Date(comment.createdAt).toLocaleString()}</small><br /><br />
-                        {editCommentId === comment.id ? (
-                            <>
-                                <textarea
-                                    value={editContent}
-                                    onChange={(e) => setEditContent(e.target.value)}
-                                    rows="3"
-                                    cols="50"
-                                />
-                                <br />
-                                <button onClick={updateComment}>✅ 수정 완료</button>
-                                <button onClick={() => setEditCommentId(null)}>❌ 수정 취소</button>
-                            </>
-                        ) : (
-                            <>
-                                {comment.isAuthor && ( // ✅ 내 댓글일 때만 수정/삭제
-                                    <>
-                                        <button onClick={() => {
+                <div className="space-y-4">
+                    {comments.map((comment) => (
+                        <div key={comment.id} className="bg-gray-50 border rounded-lg p-4 shadow-sm">
+                            <p className="mb-1">✍️ {comment.content}</p>
+                            <p className="text-sm text-gray-500">작성자: {comment.nickname}</p>
+                            <p className="text-sm text-gray-400 mb-2">작성 시간: {new Date(comment.createdAt).toLocaleString()}</p>
+
+                            {editCommentId === comment.id ? (
+                                <>
+                                    <textarea
+                                        value={editContent}
+                                        onChange={(e) => setEditContent(e.target.value)}
+                                        rows="3"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 resize-none mb-2"
+                                    />
+                                    <div className="flex gap-2">
+                                        <button className="btn bg-green-500 hover:bg-green-600" onClick={updateComment}>✅ 수정 완료</button>
+                                        <button className="btn bg-gray-400 hover:bg-gray-500" onClick={() => setEditCommentId(null)}>❌ 수정 취소</button>
+                                    </div>
+                                </>
+                            ) : (
+                                comment.isAuthor && (
+                                    <div className="flex gap-2 mt-2">
+                                        <button className="btn bg-yellow-500 hover:bg-yellow-600" onClick={() => {
                                             setEditCommentId(comment.id);
                                             setEditContent(comment.content);
                                         }}>🖊️ 수정</button>
-                                        <button onClick={() => deleteComment(comment.id)}>🗑️ 삭제</button>
-                                    </>
-                                )}
-                            </>
-                        )}
-                    </div>
-                ))}
+                                        <button className="btn bg-red-500 hover:bg-red-600" onClick={() => deleteComment(comment.id)}>🗑️ 삭제</button>
+                                    </div>
+                                )
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

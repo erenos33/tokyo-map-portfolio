@@ -1,4 +1,3 @@
-// src/pages/MainPage.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,48 +13,39 @@ export default function MainPage() {
     };
 
     return (
-        <div style={{ padding: 30 }}>
-            <h1>🍜 도쿄 맛집 포트폴리오 메인페이지</h1>
+        <div className="p-6 max-w-2xl mx-auto">
+            <h1 className="text-2xl font-bold mb-6 text-center">🍜 도쿄 맛집 포트폴리오 메인페이지</h1>
 
             {token ? (
-                <>
-                    <p>🔐 로그인된 사용자입니다</p>
-                    <button onClick={() => navigate('/user')}>👦 유저 전용 페이지</button>
-                    {role === 'ADMIN' && (
-                        <button onClick={() => navigate('/admin')}>🛠 관리자 전용 페이지</button>
-                    )}
-                    <br /><br />
-                    <button onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/restaurant/my')}>📋 내가 등록한 맛집</button> {/* ✅ 추가 */}
-                    <br /><br />
-                    <button onClick={() => navigate('/review/create')}>✍️ 리뷰 작성하기</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/review/comments')}>💬 리뷰 댓글 작성</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/review/comments/view')}>📖 리뷰 댓글 조회</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/favorites')}>⭐ 즐겨찾기 관리</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button>
-                    <br /><br />
-                    <button onClick={handleLogout}>📕 로그아웃</button>
-                </>
+                <div className="space-y-3">
+                    <p className="text-green-600 font-semibold">🔐 로그인된 사용자입니다</p>
+                    <div className="flex flex-col gap-2">
+                        <button className="btn" onClick={() => navigate('/user')}>👦 유저 전용 페이지</button>
+                        {role === 'ADMIN' && (
+                            <button className="btn" onClick={() => navigate('/admin')}>🛠 관리자 전용 페이지</button>
+                        )}
+                        <button className="btn" onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
+                        <button className="btn" onClick={() => navigate('/restaurant/my')}>📋 내가 등록한 맛집</button>
+                        <button className="btn" onClick={() => navigate('/review/create')}>✍️ 리뷰 작성하기</button>
+                        <button className="btn" onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button>
+                        <button className="btn" onClick={() => navigate('/review/comments')}>💬 리뷰 댓글 작성</button>
+                        <button className="btn" onClick={() => navigate('/review/comments/view')}>📖 리뷰 댓글 조회</button>
+                        <button className="btn" onClick={() => navigate('/favorites')}>⭐ 즐겨찾기 관리</button>
+                        <button className="btn" onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button>
+                        <button className="btn bg-red-500 hover:bg-red-600 text-white" onClick={handleLogout}>📕 로그아웃</button>
+                    </div>
+                </div>
             ) : (
-                <>
-                    <button onClick={() => navigate('/login')}>🔐 로그인 하러가기</button>
-                    <button onClick={() => navigate('/register')}>✍️ 회원가입</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/review/comments/view')}>📖 리뷰 댓글 조회</button>
-                    <br /><br />
-                    <button onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button>
-                </>
+                <div className="flex flex-col gap-3">
+                    <div className="flex gap-2">
+                        <button className="btn" onClick={() => navigate('/login')}>🔐 로그인 하러가기</button>
+                        <button className="btn" onClick={() => navigate('/register')}>✍️ 회원가입</button>
+                    </div>
+                    <button className="btn" onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
+                    <button className="btn" onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button>
+                    <button className="btn" onClick={() => navigate('/review/comments/view')}>📖 리뷰 댓글 조회</button>
+                    <button className="btn" onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button>
+                </div>
             )}
         </div>
     );

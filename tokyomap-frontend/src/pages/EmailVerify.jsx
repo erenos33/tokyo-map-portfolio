@@ -1,4 +1,4 @@
-// 수정된 EmailVerify.jsx
+// EmailVerify.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -26,8 +26,8 @@ export default function EmailVerify() {
                 }
             );
 
-            const result = response.data; // 수정된 부분
-            const { accessToken, expiresAt, role } = result.data; // 수정된 부분
+            const result = response.data;
+            const { accessToken, expiresAt, role } = result.data;
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('expiresAt', expiresAt);
             localStorage.setItem('userRole', role);
@@ -42,20 +42,27 @@ export default function EmailVerify() {
     };
 
     return (
-        <div style={{ padding: 30 }}>
-            <h2>🔐 이메일 인증 확인</h2>
-            <p>
-                <strong>{email}</strong>로 받은 인증 코드를 입력하세요.
-            </p>
-            <input
-                type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="인증 코드"
-            />
-            <br /><br />
-            <button onClick={handleVerify}>✅ 인증 확인</button>
-            <p>{message}</p>
+        <div className="bg-gray-100 min-h-screen py-10 px-4">
+            <div className="max-w-md mx-auto bg-white p-6 rounded-xl shadow text-center">
+                <h2 className="text-2xl font-bold mb-4">🔐 이메일 인증 확인</h2>
+                <p className="mb-6">
+                    <span className="font-semibold text-blue-600">{email}</span>로 받은 인증 코드를 입력하세요.
+                </p>
+                <input
+                    type="text"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="인증 코드"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
+                />
+                <button
+                    onClick={handleVerify}
+                    className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+                >
+                    ✅ 인증 확인
+                </button>
+                {message && <p className="mt-4 text-sm font-medium">{message}</p>}
+            </div>
         </div>
     );
 }

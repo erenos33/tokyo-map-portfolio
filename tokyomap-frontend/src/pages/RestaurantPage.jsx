@@ -62,7 +62,6 @@ export default function RestaurantPage() {
         const token = localStorage.getItem('accessToken');
         if (!token) return alert('로그인이 필요합니다');
 
-        // 🔒 필수 필드 검증
         if (!place.place_id || !place.name || !place.formatted_address || !place.geometry?.location) {
             alert('⚠️ 장소 정보가 부족하여 등록할 수 없습니다.');
             return;
@@ -76,8 +75,6 @@ export default function RestaurantPage() {
             latitude: place.geometry.location.lat,
             longitude: place.geometry.location.lng
         };
-
-        console.log('📦 등록 요청 DTO:', dto);
 
         try {
             const response = await axiosInstance.post('/restaurants/register/google', dto, {
@@ -114,77 +111,105 @@ export default function RestaurantPage() {
     };
 
     return (
-        <div style={{ padding: 30 }}>
-            <h2>🍽️ 맛집 검색 페이지 (DB)</h2>
+        <div className="bg-gray-100 min-h-screen py-10 px-4">
+            <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-bold mb-6">🍽️ 맛집 검색 페이지 (DB)</h2>
 
-            <input placeholder="카테고리" value={category} onChange={(e) => setCategory(e.target.value)} />
-            <br /><br />
-            <input placeholder="도시" value={city} onChange={(e) => setCity(e.target.value)} />
-            <br /><br />
-            <label>
-                <input type="checkbox" checked={openNow} onChange={() => setOpenNow(!openNow)} />
-                현재 영업중만 보기
-            </label>
-            <br /><br />
-            <button onClick={searchRestaurants}>맛집 검색 (DB)</button>
-
-            <hr />
-
-            <h3>검색된 맛집 목록 (DB)</h3>
-            {restaurantList.map((restaurant) => (
-                <div key={restaurant.id}>
-                    <p>🍴 {restaurant.name}</p>
-                    <p>📍 {restaurant.address}</p>
-                    <p>⭐ 평점: {restaurant.rating}</p>
-                    <button onClick={() => deleteRestaurant(restaurant.id)}>삭제하기</button>
+                <div className="bg-white p-6 rounded-xl shadow space-y-4 mb-10">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
+                        <input
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
+                            placeholder="ex) 일식, 중식"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">도시</label>
+                        <input
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
+                            placeholder="ex) Tokyo, Osaka"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                        />
+                    </div>
+                    <label className="text-sm flex items-center">
+                        <input type="checkbox" checked={openNow} onChange={() => setOpenNow(!openNow)} className="mr-2" />
+                        현재 영업중만 보기
+                    </label>
+                    <button className="btn w-full" onClick={searchRestaurants}>맛집 검색 (DB)</button>
                 </div>
-            ))}
 
-            <hr />
-
-            <h2>🏠 맛집 상세조회 (DB)</h2>
-            <input placeholder="음식점 ID 입력" value={restaurantId} onChange={(e) => setRestaurantId(e.target.value)} />
-            <br /><br />
-            <button onClick={getRestaurantDetail}>맛집 상세조회</button>
-
-            {restaurantDetail && (
-                <div style={{ marginTop: 20 }}>
-                    <h3>{restaurantDetail.name}</h3>
-                    <p>주소: {restaurantDetail.address}</p>
-                    <p>위도: {restaurantDetail.latitude}</p>
-                    <p>경도: {restaurantDetail.longitude}</p>
-                    <p>평점: {restaurantDetail.rating}</p>
+                <h3 className="text-xl font-semibold mb-4">검색된 맛집 목록 (DB)</h3>
+                <div className="space-y-4 mb-12">
+                    {restaurantList.map((restaurant) => (
+                        <div key={restaurant.id} className="bg-white p-4 rounded shadow">
+                            <p>🍴 {restaurant.name}</p>
+                            <p>📍 {restaurant.address}</p>
+                            <p>⭐ 평점: {restaurant.rating}</p>
+                            <button className="btn bg-red-500 hover:bg-red-600 mt-2" onClick={() => deleteRestaurant(restaurant.id)}>삭제하기</button>
+                        </div>
+                    ))}
                 </div>
-            )}
 
-            <hr style={{ margin: '50px 0' }} />
-
-            <h2>🗺️ 구글맵 맛집 검색</h2>
-            <input placeholder="검색 키워드" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
-            <br /><br />
-            <input placeholder="도시" value={location} onChange={(e) => setLocation(e.target.value)} />
-            <br /><br />
-            <button onClick={searchGooglePlaces}>구글맵 맛집 검색</button>
-
-            <hr />
-
-            <h3>검색된 맛집 목록 (Google Maps)</h3>
-            {googleResults.map((place, index) => (
-                <div key={index} style={{ marginBottom: 20 }}>
-                    <p>🍴 이름: {place.name}</p>
-                    <p>📍 주소: {place.formatted_address}</p>
-                    <p>⭐ 평점: {place.rating}</p>
-                    <p>🗺️ 위치: ({place.geometry?.location?.lat}, {place.geometry?.location?.lng})</p>
-                    <button onClick={() => registerGooglePlace(place)}>등록하기</button>
-                    <hr />
+                <h2 className="text-2xl font-bold mt-10 mb-4">🏠 맛집 상세조회 (DB)</h2>
+                <div className="bg-white p-6 rounded-xl shadow space-y-3 mb-10">
+                    <input
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
+                        placeholder="음식점 ID 입력"
+                        value={restaurantId}
+                        onChange={(e) => setRestaurantId(e.target.value)}
+                    />
+                    <button className="btn w-full" onClick={getRestaurantDetail}>맛집 상세조회</button>
                 </div>
-            ))}
 
-            {nextPageToken && (
-                <div style={{ marginTop: 20 }}>
-                    <button onClick={fetchNextPage}>다음 페이지 불러오기</button>
+                {restaurantDetail && (
+                    <div className="bg-white p-4 rounded shadow mb-10">
+                        <h3 className="text-xl font-bold mb-2">{restaurantDetail.name}</h3>
+                        <p>주소: {restaurantDetail.address}</p>
+                        <p>위도: {restaurantDetail.latitude}</p>
+                        <p>경도: {restaurantDetail.longitude}</p>
+                        <p>평점: {restaurantDetail.rating}</p>
+                    </div>
+                )}
+
+                <h2 className="text-2xl font-bold mt-10 mb-4">🗺️ 구글맵 맛집 검색</h2>
+                <div className="bg-white p-6 rounded-xl shadow space-y-3 mb-10">
+                    <input
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
+                        placeholder="검색 키워드"
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                    />
+                    <input
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
+                        placeholder="도시"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                    />
+                    <button className="btn w-full" onClick={searchGooglePlaces}>구글맵 맛집 검색</button>
                 </div>
-            )}
+
+                <h3 className="text-xl font-semibold mb-4">검색된 맛집 목록 (Google Maps)</h3>
+                <div className="space-y-4">
+                    {googleResults.map((place, index) => (
+                        <div key={index} className="bg-white p-4 rounded shadow">
+                            <p>🍴 이름: {place.name}</p>
+                            <p>📍 주소: {place.formatted_address}</p>
+                            <p>⭐ 평점: {place.rating}</p>
+                            <p>🗺️ 위치: ({place.geometry?.location?.lat}, {place.geometry?.location?.lng})</p>
+                            <button className="btn mt-2" onClick={() => registerGooglePlace(place)}>등록하기</button>
+                        </div>
+                    ))}
+                </div>
+
+                {nextPageToken && (
+                    <div className="mt-6">
+                        <button className="btn w-full" onClick={fetchNextPage}>다음 페이지 불러오기</button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
