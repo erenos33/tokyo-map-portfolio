@@ -2,7 +2,6 @@ package me.tokyomap.util;
 
 import me.tokyomap.dto.maps.GooglePlaceResponseDto;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -23,7 +22,7 @@ public class GoogleMapsService {
                 .build();
     }
 
-    // 🔹 텍스트 응답 테스트용
+    // 🔹 단순 텍스트 응답 테스트
     public Mono<String> searchPlaces(String keyword, String location) {
         return webClient.get()
                 .uri(u -> u.path("/place/textsearch/json")
@@ -34,38 +33,7 @@ public class GoogleMapsService {
                 .bodyToMono(String.class);
     }
 
-    // 🔹 1페이지 검색 (예외 처리 포함)
-    public Mono<GooglePlaceResponseDto> searchFirstPage(String keyword, String location) {
-        return webClient.get()
-                .uri(u -> u.path("/place/textsearch/json")
-                        .queryParam("query", keyword + " in " + location)
-                        .queryParam("key", apiKey)
-                        .build())
-                .retrieve()
-                .onStatus(
-                        status -> status.isError(),                          // ← 이렇게 바꿔주세요
-                        response -> response.createException().flatMap(Mono::error)
-                )
-                .bodyToMono(GooglePlaceResponseDto.class);
-    }
-
-    // 🔹 다음 페이지 검색 (예외 처리 포함)
-    public Mono<GooglePlaceResponseDto> searchNextPage(String nextPageToken) {
-        return Mono.delay(Duration.ofSeconds(2))
-                .flatMap(ignore -> webClient.get()
-                        .uri(u -> u.path("/place/textsearch/json")
-                                .queryParam("pagetoken", nextPageToken)
-                                .queryParam("key", apiKey)
-                                .build())
-                        .retrieve()
-                        .onStatus(
-                                status -> status.isError(),                     // ← 동일하게 수정
-                                response -> response.createException().flatMap(Mono::error)
-                        )
-                        .bodyToMono(GooglePlaceResponseDto.class)
-                );
-    }
-
+    // 🔹 위치 기반 검색 (lat/lng 기반)
     public Mono<GooglePlaceResponseDto> searchByLocation(String keyword, double lat, double lng, int radius) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -78,6 +46,42 @@ public class GoogleMapsService {
                         .build()
                 )
                 .retrieve()
+                .onStatus(
+                        status -> status.isError(),
+                        response -> response.createException().flatMap(Mono::error)
+                )
                 .bodyToMono(GooglePlaceResponseDto.class);
+    }
+
+    // 🔹 키워드 + 위치 기반 검색 (도시명 기반)
+    public Mono<GooglePlaceResponseDto> searchFirstPage(String keyword, String location) {
+        return webClient.get()
+                .uri(u -> u.path("/place/textsearch/json")
+                        .queryParam("query", keyword + " in " + location)
+                        .queryParam("key", apiKey)
+                        .build())
+                .retrieve()
+                .onStatus(
+                        status -> status.isError(),
+                        response -> response.createException().flatMap(Mono::error)
+                )
+                .bodyToMono(GooglePlaceResponseDto.class);
+    }
+
+    // 🔹 다음 페이지 검색
+    public Mono<GooglePlaceResponseDto> searchNextPage(String nextPageToken) {
+        return Mono.delay(Duration.ofSeconds(2))
+                .flatMap(ignore -> webClient.get()
+                        .uri(u -> u.path("/place/textsearch/json")
+                                .queryParam("pagetoken", nextPageToken)
+                                .queryParam("key", apiKey)
+                                .build())
+                        .retrieve()
+                        .onStatus(
+                                status -> status.isError(),
+                                response -> response.createException().flatMap(Mono::error)
+                        )
+                        .bodyToMono(GooglePlaceResponseDto.class)
+                );
     }
 }

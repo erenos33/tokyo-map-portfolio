@@ -19,12 +19,11 @@ public class GoogleMapsController {
 
     private final GoogleMapsService googleMapsService;
 
-
-    @Operation(summary = "장소 검색 1페이지", description = "키워드와 위치로 1페이지 장소 검색을 수행합니다.")
+    @Operation(summary = "장소 검색 1페이지", description = "키워드와 위치로 1페이지 장소 검색을 수행합니다. lat/lng가 함께 전달되면 GPS 기반 검색으로 처리됩니다.")
     @GetMapping("/search")
     public Mono<GooglePlaceResponseDto> searchFirstPage(
             @RequestParam String keyword,
-            @RequestParam String location,
+            @RequestParam(required = false) String location,
             @RequestParam(required = false) Double lat,
             @RequestParam(required = false) Double lng
     ) {
