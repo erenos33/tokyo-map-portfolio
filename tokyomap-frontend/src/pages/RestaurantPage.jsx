@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import axiosInstance from '../api/axiosInstance';
 
 export default function RestaurantPage() {
@@ -13,6 +14,19 @@ export default function RestaurantPage() {
     const [location, setLocation] = useState('Tokyo');
     const [googleResults, setGoogleResults] = useState([]);
     const [nextPageToken, setNextPageToken] = useState(null);
+    const [searchMode, setSearchMode] = useState('city');
+
+    const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
 
     const searchRestaurants = async () => {
         try {
@@ -33,7 +47,6 @@ export default function RestaurantPage() {
             console.error('맛집 상세조회 실패', error);
         }
     };
-
     const searchGooglePlaces = async () => {
         try {
             const response = await axiosInstance.get('/maps/search', {
@@ -46,18 +59,91 @@ export default function RestaurantPage() {
         }
     };
 
-    const fetchNextPage = async () => {
-        try {
-            const response = await axiosInstance.get('/maps/next', {
-                params: { token: nextPageToken },
-            });
-            setGoogleResults((prev) => [...prev, ...response.data.results]);
-            setNextPageToken(response.data.next_page_token);
-        } catch (error) {
-            console.error('구글맵 다음 페이지 검색 실패', error);
+    const searchGooglePlacesByGps = async () => {
+        if (!keyword || keyword.trim() === '') {
+            alert('검색 키워드를 입력해주세요.');
+            return;
         }
+
+        if (!navigator.geolocation) {
+            alert('이 브라우저는 위치 정보 기능을 지원하지 않습니다.');
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                try {
+                    const response = await axiosInstance.get('/maps/search', {
+                        params: { keyword, lat: latitude, lng: longitude },
+                    });
+
+                    const filteredResults = response.data.results.filter(place => {
+                        const target = place.geometry?.location;
+                        if (!target?.lat || !target?.lng) return false;
+
+                        const distance = getDistanceFromLatLonInKm(
+                            latitude, longitude,
+                            target.lat, target.lng
+                        );
+
+                        return distance <= 3;
+                    });
+
+                    setGoogleResults(filteredResults);
+                    setNextPageToken(filteredResults.length > 0 ? response.data.next_page_token : null);
+                    alert('📍 내 위치 기준 3km 이내 결과만 표시됩니다.');
+                } catch (error) {
+                    alert('위치 기반 검색 실패');
+                    console.error(error);
+                }
+            },
+            (error) => {
+                alert('위치 정보 접근 실패');
+                console.error(error);
+            }
+        );
     };
 
+    const fetchNextPage = async () => {
+        if (!navigator.geolocation) {
+            alert('이 브라우저는 위치 정보 기능을 지원하지 않습니다.');
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                try {
+                    const response = await axiosInstance.get('/maps/next', {
+                        params: { token: nextPageToken },
+                    });
+
+                    const filtered = response.data.results.filter(place => {
+                        const target = place.geometry?.location;
+                        if (!target?.lat || !target?.lng) return false;
+
+                        const distance = getDistanceFromLatLonInKm(
+                            latitude, longitude,
+                            target.lat, target.lng
+                        );
+
+                        return distance <= 3;
+                    });
+
+                    setGoogleResults(prev => [...prev, ...filtered]);
+                    setNextPageToken(filtered.length > 0 ? response.data.next_page_token : null);
+                } catch (error) {
+                    alert('다음 페이지 검색 실패');
+                    console.error(error);
+                }
+            },
+            (error) => {
+                alert('위치 정보 접근 실패');
+                console.error(error);
+            }
+        );
+    };
     const registerGooglePlace = async (place) => {
         const token = localStorage.getItem('accessToken');
         if (!token) return alert('로그인이 필요합니다');
@@ -113,27 +199,12 @@ export default function RestaurantPage() {
     return (
         <div className="bg-gray-100 min-h-screen py-10 px-4">
             <div className="max-w-4xl mx-auto">
-                <h2 className="text-2xl font-bold mb-6">🍽️ 맛집 검색 페이지 (DB)</h2>
 
+                {/* DB 검색 */}
+                <h2 className="text-2xl font-bold mb-6">🍽️ 맛집 검색 페이지 (DB)</h2>
                 <div className="bg-white p-6 rounded-xl shadow space-y-4 mb-10">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
-                        <input
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
-                            placeholder="ex) 일식, 중식"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">도시</label>
-                        <input
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
-                            placeholder="ex) Tokyo, Osaka"
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                        />
-                    </div>
+                    <input className="w-full px-3 py-2 border" placeholder="카테고리" value={category} onChange={(e) => setCategory(e.target.value)} />
+                    <input className="w-full px-3 py-2 border" placeholder="도시" value={city} onChange={(e) => setCity(e.target.value)} />
                     <label className="text-sm flex items-center">
                         <input type="checkbox" checked={openNow} onChange={() => setOpenNow(!openNow)} className="mr-2" />
                         현재 영업중만 보기
@@ -141,6 +212,7 @@ export default function RestaurantPage() {
                     <button className="btn w-full" onClick={searchRestaurants}>맛집 검색 (DB)</button>
                 </div>
 
+                {/* DB 결과 */}
                 <h3 className="text-xl font-semibold mb-4">검색된 맛집 목록 (DB)</h3>
                 <div className="space-y-4 mb-12">
                     {restaurantList.map((restaurant) => (
@@ -153,17 +225,12 @@ export default function RestaurantPage() {
                     ))}
                 </div>
 
+                {/* 상세조회 */}
                 <h2 className="text-2xl font-bold mt-10 mb-4">🏠 맛집 상세조회 (DB)</h2>
                 <div className="bg-white p-6 rounded-xl shadow space-y-3 mb-10">
-                    <input
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
-                        placeholder="음식점 ID 입력"
-                        value={restaurantId}
-                        onChange={(e) => setRestaurantId(e.target.value)}
-                    />
+                    <input className="w-full px-3 py-2 border" placeholder="음식점 ID 입력" value={restaurantId} onChange={(e) => setRestaurantId(e.target.value)} />
                     <button className="btn w-full" onClick={getRestaurantDetail}>맛집 상세조회</button>
                 </div>
-
                 {restaurantDetail && (
                     <div className="bg-white p-4 rounded shadow mb-10">
                         <h3 className="text-xl font-bold mb-2">{restaurantDetail.name}</h3>
@@ -174,23 +241,23 @@ export default function RestaurantPage() {
                     </div>
                 )}
 
+                {/* Google Maps 검색 */}
                 <h2 className="text-2xl font-bold mt-10 mb-4">🗺️ 구글맵 맛집 검색</h2>
                 <div className="bg-white p-6 rounded-xl shadow space-y-3 mb-10">
-                    <input
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
-                        placeholder="검색 키워드"
-                        value={keyword}
-                        onChange={(e) => setKeyword(e.target.value)}
-                    />
-                    <input
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
-                        placeholder="도시"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                    />
-                    <button className="btn w-full" onClick={searchGooglePlaces}>구글맵 맛집 검색</button>
+                    <div className="flex gap-2">
+                        <button className={`w-1/2 px-3 py-2 rounded-md border text-center ${searchMode === 'city' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => setSearchMode('city')}>도시 기반 검색</button>
+                        <button className={`w-1/2 px-3 py-2 rounded-md border text-center ${searchMode === 'gps' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => setSearchMode('gps')}>📍 GPS 기반 검색</button>
+                    </div>
+                    <input className="w-full px-3 py-2 border" placeholder="검색 키워드" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+                    {searchMode === 'city' && (
+                        <input className="w-full px-3 py-2 border" placeholder="도시 (예: Tokyo)" value={location} onChange={(e) => setLocation(e.target.value)} />
+                    )}
+                    <button className="btn w-full bg-blue-500 text-white hover:bg-blue-600" onClick={searchMode === 'city' ? searchGooglePlaces : searchGooglePlacesByGps}>
+                        {searchMode === 'city' ? '구글맵 맛집 검색' : '📍 내 위치로 구글맵 맛집 검색'}
+                    </button>
                 </div>
 
+                {/* Google Maps 결과 */}
                 <h3 className="text-xl font-semibold mb-4">검색된 맛집 목록 (Google Maps)</h3>
                 <div className="space-y-4">
                     {googleResults.map((place, index) => (
@@ -198,7 +265,6 @@ export default function RestaurantPage() {
                             <p>🍴 이름: {place.name}</p>
                             <p>📍 주소: {place.formatted_address}</p>
                             <p>⭐ 평점: {place.rating}</p>
-                            <p>🗺️ 위치: ({place.geometry?.location?.lat}, {place.geometry?.location?.lng})</p>
                             <button className="btn mt-2" onClick={() => registerGooglePlace(place)}>등록하기</button>
                         </div>
                     ))}
