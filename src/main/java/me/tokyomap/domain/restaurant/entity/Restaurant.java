@@ -61,7 +61,9 @@ public class Restaurant extends BaseTimeEntity {
 
 
     @Builder
-    public Restaurant(String name, String address, Double latitude, Double longitude, Double rating, String placeId, User registeredBy) {
+    public Restaurant(String name, String address, Double latitude, Double longitude,
+                      Double rating, String placeId, User registeredBy,
+                      String priceRange, String openingHours, String phoneNumber) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
@@ -69,5 +71,8 @@ public class Restaurant extends BaseTimeEntity {
         this.rating = rating;
         this.placeId = placeId;
         this.registeredBy = registeredBy;
+        this.priceRange = priceRange;
+        this.openingHours = openingHours;
+        this.phoneNumber = phoneNumber;
     }
 }

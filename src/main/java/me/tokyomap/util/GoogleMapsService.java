@@ -1,6 +1,9 @@
 package me.tokyomap.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import me.tokyomap.dto.maps.GooglePlaceDetailResponseDto;
 import me.tokyomap.dto.maps.GooglePlaceResponseDto;
+import me.tokyomap.dto.maps.GooglePlaceDetailWrapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,7 +25,6 @@ public class GoogleMapsService {
                 .build();
     }
 
-    // 🔹 단순 텍스트 응답 테스트
     public Mono<String> searchPlaces(String keyword, String location) {
         return webClient.get()
                 .uri(u -> u.path("/place/textsearch/json")
@@ -33,7 +35,6 @@ public class GoogleMapsService {
                 .bodyToMono(String.class);
     }
 
-    // 🔹 위치 기반 검색 (lat/lng 기반)
     public Mono<GooglePlaceResponseDto> searchByLocation(String keyword, double lat, double lng, int radius) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -53,7 +54,6 @@ public class GoogleMapsService {
                 .bodyToMono(GooglePlaceResponseDto.class);
     }
 
-    // 🔹 키워드 + 위치 기반 검색 (도시명 기반)
     public Mono<GooglePlaceResponseDto> searchFirstPage(String keyword, String location) {
         return webClient.get()
                 .uri(u -> u.path("/place/textsearch/json")
@@ -68,7 +68,6 @@ public class GoogleMapsService {
                 .bodyToMono(GooglePlaceResponseDto.class);
     }
 
-    // 🔹 다음 페이지 검색
     public Mono<GooglePlaceResponseDto> searchNextPage(String nextPageToken) {
         return Mono.delay(Duration.ofSeconds(2))
                 .flatMap(ignore -> webClient.get()
@@ -83,5 +82,36 @@ public class GoogleMapsService {
                         )
                         .bodyToMono(GooglePlaceResponseDto.class)
                 );
+    }
+
+    public Mono<GooglePlaceDetailResponseDto> getPlaceDetail(String placeId) {
+        System.out.println("📡 placeId 요청됨: " + placeId);
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/place/details/json")
+                        .queryParam("place_id", placeId)
+                        .queryParam("fields", "formatted_address,formatted_phone_number,price_level,opening_hours")
+                        .queryParam("key", apiKey)
+                        .build())
+                .retrieve()
+                .onStatus(
+                        status -> status.isError(),
+                        response -> {
+                            System.out.println("🛑 Google API 오류 응답 (placeId: " + placeId + ")");
+                            return response.bodyToMono(String.class)
+                                    .doOnNext(body -> System.out.println("🧾 오류 본문: " + body))
+                                    .then(response.createException().flatMap(Mono::error));
+                        }
+                )
+                .bodyToMono(GooglePlaceDetailWrapper.class)
+                .map(wrapper -> {
+                    GooglePlaceDetailResponseDto dto = wrapper.getResult();
+                    try {
+                        System.out.println("✅ 디테일 응답: " + new ObjectMapper().writeValueAsString(dto));
+                    } catch (Exception e) {
+                        System.out.println("❌ 디버깅 JSON 변환 실패: " + e.getMessage());
+                    }
+                    return dto;
+                });
     }
 }

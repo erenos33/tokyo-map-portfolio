@@ -25,4 +25,13 @@ public class PlaceResult {
     @JsonProperty("place_id")
     private String placeId;
 
+    @JsonProperty("opening_hours")
+    private OpeningHours openingHours;
+
+    @JsonProperty("price_level")
+    private Integer priceLevel;
+
+    @JsonProperty("formatted_phone_number")
+    private String phoneNumber;
+
 }

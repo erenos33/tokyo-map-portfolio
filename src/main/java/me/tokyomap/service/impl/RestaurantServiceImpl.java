@@ -62,6 +62,9 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .latitude(dto.getLatitude())
                 .longitude(dto.getLongitude())
                 .rating(dto.getRating())
+                .openingHours(dto.getOpeningHours())
+                .priceRange(dto.getPriceRange())
+                .phoneNumber(dto.getPhoneNumber())
                 .registeredBy(user)
                 .build();
 

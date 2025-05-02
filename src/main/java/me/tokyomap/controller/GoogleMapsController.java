@@ -3,6 +3,7 @@ package me.tokyomap.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import me.tokyomap.dto.maps.GooglePlaceDetailResponseDto;
 import me.tokyomap.dto.maps.GooglePlaceResponseDto;
 import me.tokyomap.util.GoogleMapsService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,5 +39,10 @@ public class GoogleMapsController {
     @GetMapping("/next")
     public Mono<GooglePlaceResponseDto> searchNextPage(@RequestParam String token) {
         return googleMapsService.searchNextPage(token);
+    }
+
+    @GetMapping("/detail")
+    public Mono<GooglePlaceDetailResponseDto> getPlaceDetail(@RequestParam String placeId) {
+        return googleMapsService.getPlaceDetail(placeId);
     }
 }
