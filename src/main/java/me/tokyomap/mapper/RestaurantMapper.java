@@ -12,6 +12,9 @@ public class RestaurantMapper {
                 .latitude(r.getLatitude())
                 .longitude(r.getLongitude())
                 .rating(r.getRating())
+                .openingHours(r.getOpeningHours())   // ✅ 추가
+                .priceRange(r.getPriceRange())       // ✅ 추가
+                .phoneNumber(r.getPhoneNumber())
                 .build();
     }
 }

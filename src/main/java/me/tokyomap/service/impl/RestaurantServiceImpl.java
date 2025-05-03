@@ -93,4 +93,10 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         restaurantRepository.delete(restaurant);
     }
+
+    @Override
+    public void deleteRestaurantByAdmin(Long restaurantId) {
+        restaurantRepository.deleteById(restaurantId);
+    }
+
 }

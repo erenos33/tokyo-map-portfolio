@@ -27,4 +27,13 @@ public class RestaurantSearchResponseDto {
 
     @Schema(description = "평점", example = "4.5")
     private Double rating;
+
+    @Schema(description = "영업시간", example = "월~일 11:00–22:00")
+    private String openingHours;
+
+    @Schema(description = "가격대", example = "₩₩₩")
+    private String priceRange;
+
+    @Schema(description = "전화번호", example = "03-1234-5678")
+    private String phoneNumber;
 }

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -111,6 +112,17 @@ public class RestaurantController {
         String email = authentication.getName();
         restaurantService.deleteMyRestaurant(id, email);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "관리자 전용 음식점 삭제", description = "관리자가 모든 음식점을 삭제할 수 있는 API", security = @SecurityRequirement(name = "bearerAuth"))
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/restaurants/{id}")
+    public ApiResponse<String> deleteRestaurantAsAdmin(
+            @Parameter(description = "음식점 ID", example = "1")
+            @PathVariable Long id
+    ) {
+        restaurantService.deleteRestaurantByAdmin(id);
+        return ApiResponse.success("삭제 완료");
     }
 
 }

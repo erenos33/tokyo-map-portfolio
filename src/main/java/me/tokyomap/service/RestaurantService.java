@@ -20,5 +20,7 @@ public interface RestaurantService {
 
     void deleteMyRestaurant(Long restaurantId, String userEmail);
 
+    void deleteRestaurantByAdmin(Long restaurantId);
+
 
 }
