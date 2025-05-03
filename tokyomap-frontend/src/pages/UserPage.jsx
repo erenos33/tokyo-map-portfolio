@@ -10,7 +10,7 @@ const UserPage = () => {
     useEffect(() => {
         const fetchUserPage = async () => {
             try {
-                const response = await axiosInstance.get('http://localhost:8080/api/auth/test');
+                const response = await axiosInstance.get('/auth/test');
                 setMessage(response.data.data); // 수정된 부분
             } catch (error) {
                 setMessage('❌ 접근 실패 - 유효한 사용자 아님');
