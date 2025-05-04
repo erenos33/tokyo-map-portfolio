@@ -18,6 +18,9 @@ public class ReviewResponseDto {
     @Schema(description = "리뷰 ID", example = "1")
     private Long id;
 
+    @Schema(description = "작성자 ID", example = "42")
+    private Long authorId;
+
     @Schema(description = "작성자 닉네임", example = "도쿄맛집러버")
     private String nickname;
 
@@ -34,8 +37,9 @@ public class ReviewResponseDto {
     private Long likeCount;
 
     @QueryProjection
-    public ReviewResponseDto(Long id, String nickname, String content, int rating, LocalDateTime createdAt, Long likeCount) {
+    public ReviewResponseDto(Long id, Long authorId, String nickname, String content, int rating, LocalDateTime createdAt, Long likeCount) {
         this.id = id;
+        this.authorId = authorId;
         this.nickname = nickname;
         this.content = content;
         this.rating = rating;

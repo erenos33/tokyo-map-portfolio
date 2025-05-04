@@ -45,6 +45,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                     Long likeCount = tuple.get(reviewLike.count());
                     return new ReviewResponseDto(
                             r.getId(),
+                            r.getUser().getId(),
                             r.getUser().getNickname(),
                             r.getContent(),
                             r.getRating(),

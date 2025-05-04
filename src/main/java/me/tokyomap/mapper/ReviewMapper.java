@@ -8,6 +8,7 @@ public class ReviewMapper {
     public static ReviewResponseDto toDto(Review review) {
         return ReviewResponseDto.builder()
                 .id(review.getId())
+                .authorId(review.getUser().getId())
                 .nickname(review.getUser().getNickname())
                 .content(review.getContent())
                 .rating(review.getRating())
