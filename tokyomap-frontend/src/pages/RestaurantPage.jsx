@@ -25,14 +25,15 @@ export default function RestaurantPage() {
         const todayLine = opening_hours.weekday_text[googleIndex];
         if (typeof todayLine !== 'string') return '';
         const parts = todayLine.split(': ');
-        if (parts.length < 2) return '';
-        const times = parts[1];
-        if (!times.includes('–')) return '';
-        const [, end] = times.split('–').map(s => s.trim());
-        const [hms, period] = end.split(' ');
+        if (parts.length < 2 || !parts[1].includes('–')) return '';
+
+        const [start, end] = parts[1].split('–').map(s => s.trim());
+        const timeToUse = opening_hours.open_now ? end : start;
+        const [timeStr, period] = timeToUse.split(' ');
         const korPeriod = period === 'AM' ? '오전' : '오후';
         const action = opening_hours.open_now ? '영업 종료' : '영업 시작';
-        return `${korPeriod} ${hms}에 ${action}`;
+
+        return `${korPeriod} ${timeStr}에 ${action}`;
     };
 
     const fetchPlaceDetail = async (placeId) => {
