@@ -1,6 +1,5 @@
 package me.tokyomap.service.impl;
 
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;

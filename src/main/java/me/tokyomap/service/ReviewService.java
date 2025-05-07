@@ -1,6 +1,5 @@
 package me.tokyomap.service;
 
-import jakarta.validation.Valid;
 import me.tokyomap.dto.review.ReviewLikeCountResponseDto;
 import me.tokyomap.dto.review.ReviewRequestDto;
 import me.tokyomap.dto.review.ReviewResponseDto;
@@ -9,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.List;
 
 public interface ReviewService {
 

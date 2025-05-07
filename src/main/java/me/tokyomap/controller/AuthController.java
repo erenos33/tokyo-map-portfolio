@@ -9,7 +9,6 @@ import me.tokyomap.dto.LoginResponseDto;
 import me.tokyomap.dto.common.ApiResponse;
 import me.tokyomap.dto.user.LoginRequestDto;
 import me.tokyomap.service.AuthService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;

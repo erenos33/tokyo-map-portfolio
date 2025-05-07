@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.tokyomap.domain.user.entity.User;
-import me.tokyomap.domain.review.entity.Review;
 
 @Entity
 @Getter

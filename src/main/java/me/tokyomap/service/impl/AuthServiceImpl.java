@@ -1,8 +1,5 @@
 package me.tokyomap.service.impl;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.tokyomap.domain.user.entity.User;
 import me.tokyomap.domain.user.repository.UserRepository;

@@ -19,9 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -55,18 +52,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Restaurant restaurant = Restaurant.builder()
-                .placeId(dto.getPlaceId())
-                .name(dto.getName())
-                .address(dto.getAddress())
-                .latitude(dto.getLatitude())
-                .longitude(dto.getLongitude())
-                .rating(dto.getRating())
-                .openingHours(dto.getOpeningHours())
-                .priceRange(dto.getPriceRange())
-                .phoneNumber(dto.getPhoneNumber())
-                .registeredBy(user)
-                .build();
+        Restaurant restaurant = RestaurantMapper.fromGoogleDto(dto, user);
 
         restaurantRepository.save(restaurant);
         return restaurant.getId();

@@ -80,7 +80,8 @@ public class RestaurantController {
                 .map(ApiResponse::success);
     }
 
-    @Operation(summary = "Google 검색 결과 등록", description = "Google Maps에서 검색된 음식점을 등록", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Google 검색 결과 등록", description = "Google Maps에서 검색된 음식점을 등록")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/register/google")
     public ResponseEntity<ApiResponse<Long>> registerFromGoogle(
             @Valid @RequestBody GooglePlaceRegisterRequestDto dto,
@@ -91,7 +92,8 @@ public class RestaurantController {
         return ResponseEntity.ok(ApiResponse.success(restaurantId));
     }
 
-    @Operation(summary = "내가 등록한 음식점 조회", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "내가 등록한 음식점 조회")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/my")
     public ApiResponse<Page<RestaurantSearchResponseDto>> getMyRestaurants(
             Authentication authentication,
@@ -103,18 +105,20 @@ public class RestaurantController {
         return ApiResponse.success(result);
     }
 
-    @Operation(summary = "내가 등록한 음식점 삭제", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "내가 등록한 음식점 삭제")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMyRestaurant(
+    public ResponseEntity<ApiResponse<String>> deleteMyRestaurant(
             @PathVariable Long id,
             Authentication authentication
     ) {
         String email = authentication.getName();
         restaurantService.deleteMyRestaurant(id, email);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success("삭제 완료"));
     }
 
-    @Operation(summary = "관리자 전용 음식점 삭제", description = "관리자가 모든 음식점을 삭제할 수 있는 API", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "관리자 전용 음식점 삭제", description = "관리자가 모든 음식점을 삭제할 수 있는 API")
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/restaurants/{id}")
     public ApiResponse<String> deleteRestaurantAsAdmin(

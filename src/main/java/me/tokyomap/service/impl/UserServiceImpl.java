@@ -3,7 +3,6 @@ package me.tokyomap.service.impl;
 import lombok.RequiredArgsConstructor;
 import me.tokyomap.domain.user.entity.User;
 import me.tokyomap.domain.user.repository.UserRepository;
-import me.tokyomap.domain.user.role.UserRole;
 import me.tokyomap.dto.user.UserRegisterRequestDto;
 import me.tokyomap.exception.CustomException;
 import me.tokyomap.exception.ErrorCode;

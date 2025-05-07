@@ -16,8 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "리뷰 댓글 API", description = "리뷰에 대한 댓글 등록 및 조회 기능 제공")
 @RestController
 @RequiredArgsConstructor

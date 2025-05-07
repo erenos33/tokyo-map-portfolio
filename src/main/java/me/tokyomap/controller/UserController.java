@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import me.tokyomap.dto.common.ApiResponse;
 import me.tokyomap.dto.user.UserRegisterRequestDto;
 import me.tokyomap.service.UserService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

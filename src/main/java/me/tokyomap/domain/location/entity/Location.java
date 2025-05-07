@@ -1,6 +1,5 @@
 package me.tokyomap.domain.location.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
