@@ -53,8 +53,14 @@ export default function MyRestaurantPage() {
     /* ----------- 음식점 삭제 ----------- */
     const deleteRestaurant = async (id) => {
         if (!window.confirm('정말 이 음식점을 삭제하시겠습니까?')) return;
-        try { await axiosInstance.delete(`/restaurants/${id}`); fetchMyRestaurants(); }
-        catch (e) { console.error('음식점 삭제 실패', e); alert('음식점 삭제 실패'); }
+        try {
+            const res = await axiosInstance.delete(`/restaurants/${id}`);
+            alert(res.data?.data ?? '삭제 완료');  // 👉 메시지 출력
+            fetchMyRestaurants();                // 👉 목록 새로고침
+        } catch (e) {
+            console.error('음식점 삭제 실패', e);
+            alert(e.response?.data?.message ?? '음식점 삭제 실패');
+        }
     };
 
     /* -------- 영업시간 요약 / 현재 영업중 체크 -------- */
