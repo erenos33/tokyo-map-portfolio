@@ -25,12 +25,8 @@ export default function MainPage() {
                             <button className="btn" onClick={() => navigate('/admin')}>🛠 관리자 전용 페이지</button>
                         )}
                         <button className="btn" onClick={() => navigate('/restaurant')}>🍴 맛집 검색하기</button>
-                        <button className="btn" onClick={() => navigate('/restaurant/my')}>📋 내가 등록한 맛집</button>
-                        <button className="btn" onClick={() => navigate('/review/create')}>✍️ 리뷰 작성하기</button>
                         <button className="btn" onClick={() => navigate('/review/list')}>📖 리뷰 조회하기</button>
-                        <button className="btn" onClick={() => navigate('/review/comments')}>💬 리뷰 댓글 작성</button>
                         <button className="btn" onClick={() => navigate('/review/comments/view')}>📖 리뷰 댓글 조회</button>
-                        <button className="btn" onClick={() => navigate('/favorites')}>⭐ 즐겨찾기 관리</button>
                         <button className="btn" onClick={() => navigate('/locations')}>🌏 지역 목록 조회</button>
                         <button className="btn bg-red-500 hover:bg-red-600 text-white" onClick={handleLogout}>📕 로그아웃</button>
                     </div>

@@ -92,11 +92,6 @@ const AdminPage = () => {
             <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-bold mb-4">👑 관리자 전용 페이지</h2>
                 <p className="mb-6">{message}</p>
-                <button
-                    className="btn bg-gray-500 text-white py-2 px-4 rounded mb-10"
-                    onClick={() => navigate('/')}
-                >⬅️ 메인페이지로 돌아가기</button>
-
                 <h3 className="text-xl font-semibold mb-4">📋 DB 맛집 검색</h3>
                 <div className="bg-white p-6 rounded-xl shadow space-y-4 mb-10">
                     <input
@@ -160,6 +155,14 @@ const AdminPage = () => {
                         })}
                     </div>
                 )}
+                <div className="mt-10 text-center">
+                    <button
+                        className="btn bg-blue-500 hover:bg-blue-600 text-white"
+                        onClick={() => window.location.href = '/'}
+                    >
+                        ⬅️ 메인페이지로 돌아가기
+                    </button>
+                </div>
             </div>
         </div>
     );

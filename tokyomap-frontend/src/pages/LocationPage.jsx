@@ -49,6 +49,14 @@ export default function LocationPage() {
                     ) : (
                         <p className="text-gray-500">표시할 지역 정보가 없습니다.</p>
                     )}
+                    <div className="mt-10 text-center">
+                        <button
+                            className="btn bg-blue-500 hover:bg-blue-600 text-white"
+                            onClick={() => window.location.href = '/'}
+                        >
+                            ⬅️ 메인페이지로 돌아가기
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

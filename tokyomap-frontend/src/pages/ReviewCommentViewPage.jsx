@@ -104,6 +104,14 @@ export default function ReviewCommentViewPage() {
                             )}
                         </div>
                     ))}
+                    <div className="mt-10 text-center">
+                        <button
+                            className="btn bg-blue-500 hover:bg-blue-600 text-white"
+                            onClick={() => window.location.href = '/'}
+                        >
+                            ⬅️ 메인페이지로 돌아가기
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
