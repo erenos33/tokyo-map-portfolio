@@ -24,7 +24,7 @@ public class AuthController {
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
-    public ApiResponse<?> login(@RequestBody @Valid LoginRequestDto loginRequest) {
+    public ApiResponse<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequest) {
         LoginResponseDto loginResponse = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
         return ApiResponse.success(loginResponse);
     }

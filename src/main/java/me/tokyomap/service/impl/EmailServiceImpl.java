@@ -35,7 +35,8 @@ public class EmailServiceImpl implements EmailService {
         User user = EntityFinder.getUserOrThrow(userRepository, toEmail);
 
         //3. 인증 코드 저장
-        user.updateVerificationCode(verificationCode, expiresAt); //setter 대신 명확한 메서드 사용
+        user.updateVerificationCode(verificationCode, expiresAt);
+        userRepository.save(user);//setter 대신 명확한 메서드 사용
 
         //4. 이메일 내용 구성
         String subject = "도쿄 맛집 포트폴리오 이메일 인증";
@@ -69,7 +70,8 @@ public class EmailServiceImpl implements EmailService {
         }
 
         //2. 코드 일치 확인
-        if(!code.equals(user.getVerificationCode())) {
+        if (user.getVerificationCode() == null ||
+                !code.trim().equalsIgnoreCase(user.getVerificationCode().trim())) {
             throw new CustomException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
 
