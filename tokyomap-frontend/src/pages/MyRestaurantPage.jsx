@@ -1,9 +1,11 @@
 /* src/pages/MyRestaurantPage.jsx */
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyRestaurantPage() {
     /* ---------------- 상태 ---------------- */
+    const navigate = useNavigate();
     const [myRestaurants, setMyRestaurants]   = useState([]);
     const [expandedHours, setExpandedHours]   = useState({});
     const [reviewStates,  setReviewStates]    = useState({});
@@ -45,8 +47,16 @@ export default function MyRestaurantPage() {
             const res  = await axiosInstance.get('/restaurants/my');
             const list = res.data.data.content;
             setMyRestaurants(list);
-            await Promise.all(list.map(r => checkFavorite(r.id))); // 각 맛집 즐겨찾기 상태
-        } catch (e) { console.error('내가 등록한 맛집 조회 실패', e); }
+            await Promise.all(list.map(r => checkFavorite(r.id)));
+        } catch (e) {
+            console.error('내가 등록한 맛집 조회 실패', e);
+            if (e.response?.status === 403) {
+                alert("이메일 인증이 필요합니다.");
+                navigate("/verify-email");  // 인증 페이지로 이동
+            } else {
+                alert("맛집 목록을 불러오는 데 실패했습니다.");
+            }
+        }
     };
     useEffect(() => { fetchMyRestaurants(); }, []);
 
