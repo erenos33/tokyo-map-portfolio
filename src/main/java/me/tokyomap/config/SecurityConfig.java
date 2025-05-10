@@ -63,7 +63,7 @@ public class SecurityConfig {
 
                         // 그 외 요청 (등록, 내 등록 조회, 삭제 등)는 인증 필요
                         .requestMatchers(HttpMethod.POST, "/api/restaurants").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/restaurants/mine").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/restaurants/my").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/restaurants/{id}").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/restaurants/register/google").authenticated()
                         .anyRequest().authenticated()

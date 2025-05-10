@@ -11,7 +11,10 @@ import me.tokyomap.dto.maps.GooglePlaceResponseDto;
 import me.tokyomap.dto.restaurant.GooglePlaceRegisterRequestDto;
 import me.tokyomap.dto.restaurant.RestaurantSearchRequestDto;
 import me.tokyomap.dto.restaurant.RestaurantSearchResponseDto;
+import me.tokyomap.exception.CustomException;
+import me.tokyomap.exception.ErrorCode;
 import me.tokyomap.service.RestaurantService;
+import me.tokyomap.service.UserService;
 import me.tokyomap.util.GoogleMapsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +35,7 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
     private final GoogleMapsService googleMapsService;
+    private final UserService userService;
 
     @Operation(summary = "맛집 검색", description = "카테고리, 지역, 영업여부로 맛집을 검색합니다.")
     @GetMapping("/search")
@@ -100,7 +104,18 @@ public class RestaurantController {
             @Parameter(hidden = true)
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
+        // 🔐 authentication null 방어 처리
+        if (authentication == null) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);  // or UNAUTHORIZED
+        }
+
         String email = authentication.getName();
+
+        // 🔐 이메일 인증 확인
+        if (!userService.isEmailVerified(email)) {
+            throw new CustomException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
+
         Page<RestaurantSearchResponseDto> result = restaurantService.getMyRegisteredRestaurants(email, pageable);
         return ApiResponse.success(result);
     }
