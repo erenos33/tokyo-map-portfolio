@@ -9,7 +9,10 @@ import java.util.List;
 
 public interface ReviewCommentService {
     void createComment(Long reviewId, ReviewCommentRequestDto dto, String email);
+
     Page<ReviewCommentResponseDto> getCommentsByReviewId(Long reviewId, Pageable pageable);
+
     void updateComment(Long commentId, ReviewCommentRequestDto dto, String email);
+
     void deleteComment(Long commentId, String email);
 }

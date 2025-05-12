@@ -5,6 +5,7 @@ import me.tokyomap.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -14,7 +15,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -36,6 +39,11 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint())
+                        .accessDeniedHandler(accessDeniedHandler())
+                )
 
                 .authorizeHttpRequests(auth -> auth
                         // 관리자 전용
@@ -78,5 +86,35 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setCharacterEncoding("UTF-8"); // 🔹 추가
+            response.setContentType("application/json; charset=UTF-8");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write("""
+            {
+              "errorCode": "AUTH_REQUIRED",
+              "message": "로그인한 사용자만 이용 가능합니다."
+            }
+        """);
+        };
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            response.setCharacterEncoding("UTF-8"); // 🔹 추가
+            response.setContentType("application/json; charset=UTF-8");
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.getWriter().write("""
+            {
+              "errorCode": "ACCESS_DENIED",
+              "message": "접근 권한이 없습니다."
+            }
+        """);
+        };
     }
 }

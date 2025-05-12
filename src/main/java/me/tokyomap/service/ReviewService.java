@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 
 
 public interface ReviewService {
-
     ReviewResponseDto createReview(ReviewRequestDto dto, String email);
 
     ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto dto, String email);

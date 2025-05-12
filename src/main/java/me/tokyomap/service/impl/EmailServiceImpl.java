@@ -76,7 +76,7 @@ public class EmailServiceImpl implements EmailService {
         }
 
         //3. 인증 처리
-        user.veriFyEmail();
+        user.verifyEmail();
 
     }
 }

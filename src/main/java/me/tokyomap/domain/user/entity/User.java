@@ -64,7 +64,7 @@ public class User extends BaseTimeEntity {
         this.verificationCodeExpiresAt = expiresAt;
     }
 
-    public void veriFyEmail() {
+    public void verifyEmail() {
 
         this.emailVerified = true;
         this.verificationCode = null;//인증 성공 시 코드 삭제

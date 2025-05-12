@@ -6,6 +6,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -75,6 +77,20 @@ public class GlobalExceptionHandler {
         response.put("errorCode", errorCode.name());
         response.put("message", localizedMessage);
         response.put("details", errorMessages);
+
+        return new ResponseEntity<>(response, errorCode.getHttpStatus());
+    }
+
+    @ExceptionHandler({ AccessDeniedException.class, AuthenticationCredentialsNotFoundException.class })
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(Exception ex) {
+        ErrorCode errorCode = ErrorCode.AUTH_REQUIRED;
+        Locale locale = LocaleContextHolder.getLocale();
+
+        String localizedMessage = messageSource.getMessage(errorCode.getMessage(), null, locale);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("errorCode", errorCode.name());
+        response.put("message", localizedMessage);
 
         return new ResponseEntity<>(response, errorCode.getHttpStatus());
     }

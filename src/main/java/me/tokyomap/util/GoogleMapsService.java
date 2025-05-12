@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import me.tokyomap.dto.maps.GooglePlaceDetailResponseDto;
 import me.tokyomap.dto.maps.GooglePlaceResponseDto;
 import me.tokyomap.dto.maps.GooglePlaceDetailWrapper;
+import me.tokyomap.exception.CustomException;
+import me.tokyomap.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -85,7 +87,6 @@ public class GoogleMapsService {
     }
 
     public Mono<GooglePlaceDetailResponseDto> getPlaceDetail(String placeId) {
-        System.out.println("📡 placeId 요청됨: " + placeId);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/place/details/json")
@@ -96,20 +97,14 @@ public class GoogleMapsService {
                 .retrieve()
                 .onStatus(
                         status -> status.isError(),
-                        response -> {
-                            System.out.println("🛑 Google API 오류 응답 (placeId: " + placeId + ")");
-                            return response.bodyToMono(String.class)
-                                    .doOnNext(body -> System.out.println("🧾 오류 본문: " + body))
-                                    .then(response.createException().flatMap(Mono::error));
-                        }
+                        response -> response.bodyToMono(String.class)
+                                .flatMap(errorBody -> Mono.error(new CustomException(ErrorCode.GOOGLE_API_ERROR)))
                 )
                 .bodyToMono(GooglePlaceDetailWrapper.class)
                 .map(wrapper -> {
                     GooglePlaceDetailResponseDto dto = wrapper.getResult();
-                    try {
-                        System.out.println("✅ 디테일 응답: " + new ObjectMapper().writeValueAsString(dto));
-                    } catch (Exception e) {
-                        System.out.println("❌ 디버깅 JSON 변환 실패: " + e.getMessage());
+                    if (dto == null) {
+                        throw new CustomException(ErrorCode.GOOGLE_API_ERROR);
                     }
                     return dto;
                 });

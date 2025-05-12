@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface FavoriteService {
-
     void addFavorite(String email, FavoriteRequestDto requestDto);
 
     void removeFavorite(String email, FavoriteRequestDto requestDto);
