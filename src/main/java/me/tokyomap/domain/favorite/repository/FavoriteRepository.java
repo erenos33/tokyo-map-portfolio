@@ -10,15 +10,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+/**
+ * ユーザーのお気に入り情報を操作するリポジトリ
+ * N+1問題を回避するため、EntityGraphを使用してレストラン情報を一括取得
+ */
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
-    //중복 체크용
     boolean existsByUserAndRestaurant(User user, Restaurant restaurant);
 
-    //즐겨찾기 찾기(삭제용 등)
     Optional<Favorite> findByUserAndRestaurant(User user, Restaurant restaurant);
 
-    //특정 유저의 모든 즐겨찾기 가져오기
     @EntityGraph(attributePaths = "restaurant")
     Page<Favorite> findByUser(User user, Pageable pageable);
 }

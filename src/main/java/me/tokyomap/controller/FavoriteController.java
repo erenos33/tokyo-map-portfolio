@@ -17,17 +17,27 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * お気に入り（Favorite）関連APIコントローラー
+ * レストランのお気に入り登録、削除、確認、一覧取得を提供
+ */
 @RestController
 @RequestMapping("/api/favorites")
 @RequiredArgsConstructor
-@Tag(name = "즐겨찾기 API", description = "Favorite API (등록/삭제/조회)")
+@Tag(name = "お気に入りAPI", description = "お気に入りの登録・削除・確認・一覧取得に関するAPI")
 @SecurityRequirement(name = "bearerAuth")
 public class FavoriteController {
 
     private final FavoriteService favoriteService;
 
+    /**
+     * レストランをお気に入りに登録する
+     */
     @PostMapping
-    @Operation(summary = "즐겨찾기 등록")
+    @Operation(
+            summary = "お気に入り登録",
+            description = "指定されたレストランをユーザーのお気に入りリストに追加します。"
+    )
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Void> addFavorite(
             @RequestBody @Valid FavoriteRequestDto requestDto,
@@ -38,8 +48,14 @@ public class FavoriteController {
         return ApiResponse.success();
     }
 
+    /**
+     * お気に入りからレストランを削除する
+     */
     @DeleteMapping
-    @Operation(summary = "즐겨찾기 삭제")
+    @Operation(
+            summary = "お気に入り削除",
+            description = "ユーザーのお気に入りリストから指定されたレストランを削除します。"
+    )
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Void> removeFavorite(
             @RequestBody @Valid FavoriteRequestDto requestDto,
@@ -50,8 +66,14 @@ public class FavoriteController {
         return ApiResponse.success();
     }
 
+    /**
+     * 指定されたレストランがお気に入り登録済みか確認
+     */
     @GetMapping("/check")
-    @Operation(summary = "특정 음식점 즐겨찾기 여부 확인")
+    @Operation(
+            summary = "お気に入り登録の確認",
+            description = "指定したレストランがユーザーのお気に入りに登録されているかを確認します。"
+    )
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<FavoriteCheckResponseDto> checkFavorite(
             @RequestParam Long restaurantId,
@@ -62,8 +84,14 @@ public class FavoriteController {
         return ApiResponse.success(responseDto);
     }
 
+    /**
+     * ユーザーのお気に入り一覧をページングで取得
+     */
     @GetMapping("/my")
-    @Operation(summary = "내 즐겨찾기 목록 조회 (페이징)")
+    @Operation(
+            summary = "自分のお気に入り一覧取得",
+            description = "現在ログインしているユーザーのお気に入りレストランをページング形式で取得します。"
+    )
     @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Page<FavoriteRestaurantResponseDto>> getMyFavorites(
             Authentication authentication,
@@ -73,5 +101,4 @@ public class FavoriteController {
         Page<FavoriteRestaurantResponseDto> favorites = favoriteService.getMyFavorites(email, pageable);
         return ApiResponse.success(favorites);
     }
-
 }

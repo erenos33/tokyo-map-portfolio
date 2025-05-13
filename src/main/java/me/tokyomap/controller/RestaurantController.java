@@ -27,18 +27,27 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 
+/**
+ * レストランに関する検索・登録・削除APIコントローラー
+ */
 @RestController
 @RequestMapping("/api/restaurants")
 @RequiredArgsConstructor
-@Tag(name = "Restaurant", description = "맛집 검색 및 조회 API")
+@Tag(name = "レストランAPI", description = "レストラン検索、登録、削除などの操作を提供するAPI")
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
     private final GoogleMapsService googleMapsService;
     private final UserService userService;
 
-    @Operation(summary = "맛집 검색", description = "카테고리, 지역, 영업여부로 맛집을 검색합니다.")
+    /**
+     * カテゴリ、都市、営業中フィルターによるレストラン検索
+     */
     @GetMapping("/search")
+    @Operation(
+            summary = "レストラン検索",
+            description = "カテゴリ、地域、営業中フラグによってレストランを検索します。"
+    )
     public ApiResponse<Page<RestaurantSearchResponseDto>> searchRestaurants(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String city,
@@ -50,18 +59,29 @@ public class RestaurantController {
         return ApiResponse.success(result);
     }
 
-    @Operation(summary = "맛집 상세 조회", description = "ID로 맛집 상세정보를 조회합니다.")
+    /**
+     * IDを指定してレストラン詳細を取得
+     */
     @GetMapping("/{id}")
+    @Operation(
+            summary = "レストラン詳細取得",
+            description = "指定されたIDでレストランの詳細情報を取得します。"
+    )
     public ApiResponse<RestaurantSearchResponseDto> getRestaurantById(
-            @Parameter(description = "음식점 ID", example = "1") @PathVariable Long id
+            @Parameter(description = "レストランID", example = "1") @PathVariable Long id
     ) {
         RestaurantSearchResponseDto dto = restaurantService.getRestaurantById(id);
         return ApiResponse.success(dto);
     }
 
+    /**
+     * 緯度・経度・半径・キーワードを指定して周辺のレストラン検索
+     */
     @GetMapping("/location")
-    @Operation(summary = "위치 기반 검색 (Google API)",
-            description = "위도, 경도, 반경, 키워드를 기반으로 주변 맛집을 검색합니다.")
+    @Operation(
+            summary = "位置情報でのレストラン検索（Google API）",
+            description = "緯度・経度・半径・キーワードを指定して、周辺のレストランを検索します。"
+    )
     public Mono<ApiResponse<GooglePlaceResponseDto>> searchByLocation(
             @RequestParam double lat,
             @RequestParam double lng,
@@ -73,9 +93,14 @@ public class RestaurantController {
                 .map(ApiResponse::success);
     }
 
+    /**
+     * next_page_tokenで次のページの検索結果を取得
+     */
     @GetMapping("/location/next")
-    @Operation(summary = "위치 기반 검색 - 다음 페이지 (Google API)",
-            description = "Google Places API의 next_page_token을 이용해 다음 페이지 결과를 조회합니다.")
+    @Operation(
+            summary = "位置情報検索の次ページ取得（Google API）",
+            description = "Google Places APIのnext_page_tokenを利用して次の検索結果を取得します。"
+    )
     public Mono<ApiResponse<GooglePlaceResponseDto>> getNextPage(
             @RequestParam String token) {
 
@@ -84,9 +109,15 @@ public class RestaurantController {
                 .map(ApiResponse::success);
     }
 
-    @Operation(summary = "Google 검색 결과 등록", description = "Google Maps에서 검색된 음식점을 등록")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * Google Maps検索結果を自分のデータとして登録
+     */
     @PostMapping("/register/google")
+    @Operation(
+            summary = "Google検索結果を登録",
+            description = "Google Mapsで取得したレストランを登録します。ログインが必要です。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Long>> registerFromGoogle(
             @Valid @RequestBody GooglePlaceRegisterRequestDto dto,
             Authentication authentication) {
@@ -96,22 +127,25 @@ public class RestaurantController {
         return ResponseEntity.ok(ApiResponse.success(restaurantId));
     }
 
-    @Operation(summary = "내가 등록한 음식점 조회")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * 自分が登録したレストランを取得（ページング付き）
+     */
     @GetMapping("/my")
+    @Operation(
+            summary = "自分が登録したレストラン一覧取得"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Page<RestaurantSearchResponseDto>> getMyRestaurants(
             Authentication authentication,
             @Parameter(hidden = true)
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        // 🔐 authentication null 방어 처리
         if (authentication == null) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);  // or UNAUTHORIZED
         }
 
         String email = authentication.getName();
 
-        // 🔐 이메일 인증 확인
         if (!userService.isEmailVerified(email)) {
             throw new CustomException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
@@ -120,28 +154,39 @@ public class RestaurantController {
         return ApiResponse.success(result);
     }
 
-    @Operation(summary = "내가 등록한 음식점 삭제")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * 自分が登録したレストランを削除
+     */
     @DeleteMapping("/{id}")
+    @Operation(
+            summary = "自分が登録したレストラン削除"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<String>> deleteMyRestaurant(
             @PathVariable Long id,
             Authentication authentication
     ) {
         String email = authentication.getName();
         restaurantService.deleteMyRestaurant(id, email);
-        return ResponseEntity.ok(ApiResponse.success("삭제 완료"));
+        return ResponseEntity.ok(ApiResponse.success("削除完了"));
     }
 
-    @Operation(summary = "관리자 전용 음식점 삭제", description = "관리자가 모든 음식점을 삭제할 수 있는 API")
+    /**
+     * 管理者によるレストラン削除API（全レストラン対象）
+     */
+    @DeleteMapping("/admin/restaurants/{id}")
+    @Operation(
+            summary = "管理者用レストラン削除",
+            description = "管理者が任意のレストランを削除できるAPIです。ADMIN権限が必要です。"
+    )
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/restaurants/{id}")
     public ApiResponse<String> deleteRestaurantAsAdmin(
-            @Parameter(description = "음식점 ID", example = "1")
+            @Parameter(description = "レストランID", example = "1")
             @PathVariable Long id
     ) {
         restaurantService.deleteRestaurantByAdmin(id);
-        return ApiResponse.success("삭제 완료");
+        return ApiResponse.success("削除完了");
     }
 
 }

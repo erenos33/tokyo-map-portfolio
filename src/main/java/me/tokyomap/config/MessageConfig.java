@@ -12,7 +12,9 @@ import java.util.Locale;
 @Configuration
 public class MessageConfig {
 
-    // 다국어 메시지 파일(messages_ko.properties 등)을 읽기 위한 설정
+    /**
+     * 多言語メッセージファイル（messages_ja.propertiesなど）を読み込む設定
+     */
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
@@ -21,11 +23,13 @@ public class MessageConfig {
         return source;
     }
 
-    // 클라이언트의 Accept-Language 헤더로 Locale을 판단하는 기본 전략 설정
+    /**
+     * クライアントのAccept-Languageヘッダーに基づきLocaleを判断する設定（デフォルトは日本語）
+     */
     @Bean
     public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();
-        resolver.setDefaultLocale(Locale.KOREA); // 기본은 한국어
+        resolver.setDefaultLocale(Locale.JAPAN); // デフォルトは日本語
         return resolver;
     }
 }

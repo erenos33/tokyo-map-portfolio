@@ -16,7 +16,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "리뷰 댓글 API", description = "리뷰에 대한 댓글 등록 및 조회 기능 제공")
+
+/**
+ * レビューコメントに関する登録・取得・編集・削除API
+ */
+@Tag(name = "レビューコメントAPI", description = "レビューに対するコメントの登録、取得、編集、削除を提供するAPI")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/reviews/{reviewId}/comments")
@@ -24,9 +28,15 @@ public class ReviewCommentController {
 
     private final ReviewCommentService reviewCommentService;
 
-    @Operation(summary = "리뷰 댓글 등록", description = "로그인한 사용자가 리뷰에 댓글을 작성합니다.")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * レビューにコメントを登録（ログイン必須）
+     */
     @PostMapping
+    @Operation(
+            summary = "コメント登録",
+            description = "ログインしているユーザーが指定したレビューにコメントを投稿します。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Void> createComment(
             @PathVariable Long reviewId,
             @RequestBody @Valid ReviewCommentRequestDto dto,
@@ -36,8 +46,14 @@ public class ReviewCommentController {
         return ApiResponse.success();
     }
 
-    @Operation(summary = "리뷰 댓글 조회", description = "createdAt 기준 내림차순 정렬됩니다.")
+    /**
+     * レビューに紐づくコメント一覧を取得（createdAt降順）
+     */
     @GetMapping
+    @Operation(
+            summary = "コメント一覧取得",
+            description = "レビューに対するコメントを作成日時の降順で取得します。"
+    )
     public ApiResponse<Page<ReviewCommentResponseDto>> getComments(
             @PathVariable Long reviewId,
             @Valid PageRequestDto pageDto
@@ -45,9 +61,16 @@ public class ReviewCommentController {
         Pageable pageable = PageRequest.of(pageDto.page(), pageDto.size());
         return ApiResponse.success(reviewCommentService.getCommentsByReviewId(reviewId, pageable));
     }
-    @Operation(summary = "댓글 수정", description = "댓글을 수정합니다. 작성자 본인만 수정할 수 있습니다.")
-    @SecurityRequirement(name = "bearerAuth")
+
+    /**
+     * コメントを編集（本人のみ）
+     */
     @PutMapping("/{commentId}")
+    @Operation(
+            summary = "コメント編集",
+            description = "指定されたコメントを編集します（作成者本人のみ編集可能）。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Void> updateComment(
             @PathVariable Long commentId,
             @RequestBody @Valid ReviewCommentRequestDto dto,
@@ -57,9 +80,15 @@ public class ReviewCommentController {
         return ApiResponse.success();
     }
 
-    @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다. 작성자 본인만 삭제할 수 있습니다.")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * コメントを削除（本人のみ）
+     */
     @DeleteMapping("/{commentId}")
+    @Operation(
+            summary = "コメント削除",
+            description = "指定されたコメントを削除します（作成者本人のみ削除可能）。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Void> deleteComment(
             @PathVariable Long commentId,
             Authentication authentication

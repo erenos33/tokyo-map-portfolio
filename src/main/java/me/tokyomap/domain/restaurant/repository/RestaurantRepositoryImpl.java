@@ -14,6 +14,10 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * QueryDSLを使用してレストランを条件検索するカスタムリポジトリ実装
+ * カテゴリ・都市名・現在営業中（営業時間）などの動的条件に対応
+ */
 @RequiredArgsConstructor
 public class RestaurantRepositoryImpl implements RestaurantRepositoryCustom {
 
@@ -24,7 +28,6 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryCustom {
         QRestaurant restaurant = QRestaurant.restaurant;
         BooleanBuilder builder = new BooleanBuilder();
 
-        // ⬇⬇⬇ 여기에서 먼저 값 다듬기
         String category = Optional.ofNullable(requestDto.getCategory())
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
@@ -37,17 +40,14 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryCustom {
 
         Boolean openNow = requestDto.getOpenNow();
 
-        //조건 1: category
         if(category != null) {
             builder.and(restaurant.category.like("%" + category + "%"));
         }
 
-        //조건 2: city(address에 포함되는지)
         if (city != null) {
             builder.and(restaurant.address.like("%" + city + "%"));
         }
 
-        //조건3 : openNow (openingHours 파싱해서 간단히 비교)
         if (Boolean.TRUE.equals(openNow)) {
             LocalTime now = LocalTime.now();
             String hourStr = String.format("%02d:", now.getHour());
@@ -61,11 +61,13 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = queryFactory
-                .selectFrom(restaurant)
+        Long total = queryFactory
+                .select(restaurant.count())
+                .from(restaurant)
                 .where(builder)
-                .fetchCount();
+                .fetchOne();
 
-        return new PageImpl<>(content, pageable, total);
+        return new PageImpl<>(content, pageable, total != null ? total : 0L);
+
     }
 }

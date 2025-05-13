@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import me.tokyomap.domain.common.BaseTimeEntity;
 import me.tokyomap.domain.user.entity.User;
 
+/**
+ * レストランの基本情報を保持するエンティティ
+ * Google MapsのplaceId、登録者情報、営業時間、価格帯などを含む
+ */
 @Entity
 @Getter
 @NoArgsConstructor
@@ -16,44 +20,38 @@ public class Restaurant extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //기본 정보
     @Column(nullable = false)
-    private String name; //음식점 이름
+    private String name;
 
     @Column(nullable = false)
-    private String address; //전체 주소
+    private String address;
 
-    private String phoneNumber; //전화번호(nullable)
+    private String phoneNumber;
 
-    private String website; //웹사이트 URL(nullable)
+    private String website;
 
-    //위치 정보(구글맵 연동용)
     @Column(nullable = false)
     private Double latitude;
 
     @Column(nullable = false)
     private Double longitude;
 
-    // 추가 정보
-    private String priceRange; //가격대 (ex: "1000엔)
+    private String priceRange;
 
     @Column(name = "category")
-    private String category; //음식 종류(ex: 라멘, 이자카야, 돈카츠)
+    private String category;
 
-    private Double rating; //별점 평균(nullable)
-    private Integer reviewCount; // 리뷰 개수(nullable)
+    private Double rating;
+    private Integer reviewCount;
 
-    //이용 옵션
-    private Boolean isDineInAvailable; //매장 내 식사 가능 여부
-    private Boolean isDeliveryAvailable; //배달 가능 여부
+    private Boolean isDineInAvailable;
+    private Boolean isDeliveryAvailable;
 
-    //영업 시간(ex: "월 ~금 11:00 ~ 22:00")
     @Column(name = "opening_hours")
     private String openingHours;
 
-
     @Column(unique = true)
-    private String placeId; // 🔸 Google Place ID
+    private String placeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "registered_by")

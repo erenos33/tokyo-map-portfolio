@@ -5,6 +5,10 @@ import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
+/**
+ * QueryDSLを利用するためのJPAQueryFactoryの設定クラス
+ */
 @Configuration
 public class QueryDslConfig {
 

@@ -14,7 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 
-@Tag(name = "인증 API")
+/**
+ * 認証関連のAPIを提供するコントローラー
+ */
+@Tag(name = "認証API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -22,28 +25,44 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "로그인")
+    /**
+     * ユーザーログイン（JWTトークン発行）
+     */
     @PostMapping("/login")
+    @Operation(
+            summary = "ログイン",
+            description = "メールアドレスとパスワードを使用してログインします。成功するとJWTトークンが返されます。"
+    )
     public ApiResponse<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequest) {
         LoginResponseDto loginResponse = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
         return ApiResponse.success(loginResponse);
     }
 
-    @SecurityRequirement(name = "bearerAuth") // Swagger에서 Authorize 버튼 인식용
-    @Operation(summary = "JWT 로그인 테스트용", description = "토큰이 있어야 호출 가능")
+    /**
+     * JWTトークンの検証用API（ログイン状態確認）
+     */
     @GetMapping("/test")
+    @Operation(
+            summary = "JWT認証テスト",
+            description = "JWTトークンが有効な場合、アクセス可能なテストAPIです。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<String> testJwtAuthentication(Authentication authentication) {
         String email = authentication.getName();
-        return ApiResponse.success("JWT 인증 성공! 로그인한 유저: " + email);
+        return ApiResponse.success("JWT認証成功！ログインユーザー: " + email);
     }
 
-    @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "관리자 전용 API", description = "ADMIN 권한이 있어야 호출 가능합니다.")
-    @PreAuthorize("hasRole('ADMIN')")
+    /**
+     * 管理者専用API（ADMINロール必須）
+     */
     @GetMapping("/admin/only")
+    @Operation(
+            summary = "管理者専用API",
+            description = "このエンドポイントはADMINロールを持つユーザーのみアクセス可能です。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> adminOnly() {
-        return ApiResponse.success("관리자 권한 확인 성공! 👑");
+        return ApiResponse.success("管理者権限確認成功！");
     }
-
-
 }

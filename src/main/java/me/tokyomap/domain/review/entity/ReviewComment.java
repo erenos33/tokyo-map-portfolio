@@ -5,6 +5,10 @@ import lombok.*;
 import me.tokyomap.domain.common.BaseTimeEntity;
 import me.tokyomap.domain.user.entity.User;
 
+/**
+ * レビューに対するコメントを保持するエンティティ
+ * コメント作成者（ユーザー）と対象レビューとの関連を管理
+ */
 @Entity
 @Getter
 @Setter

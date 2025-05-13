@@ -10,6 +10,9 @@ import me.tokyomap.domain.user.role.UserRole;
 
 import java.time.LocalDateTime;
 
+/**
+ * 認証・権限・メール認証コード管理などを含むユーザーエンティティ
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

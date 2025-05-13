@@ -8,6 +8,9 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+/**
+ * JWT認証をSwagger UIで使用するためのセキュリティスキーム設定
+ */
 @SecurityScheme(
         name = "bearerAuth",
         type = SecuritySchemeType.HTTP,
@@ -18,14 +21,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
+    /**
+     * OpenAPIの基本情報（タイトル、バージョン、説明）を定義
+     */
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("도쿄 맛집 포트폴리오 API")
+                        .title("グルメマップポートフォリオAPI")
                         .version("v1")
-                        .description("도쿄 맛집 포트폴리오 프로젝트의 swagger문서입니다."));
+                        .description("グルメマップポートフォリオプロジェクトのSwaggerドキュメントです。"));
     }
+
+    /**
+     * APIグループ設定：/api/** パスにマッチするエンドポイントを対象とする
+     */
     @Bean
     public GroupedOpenApi groupedOpenApi() {
         return GroupedOpenApi.builder()

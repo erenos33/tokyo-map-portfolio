@@ -9,6 +9,11 @@ import me.tokyomap.domain.common.BaseTimeEntity;
 import me.tokyomap.domain.restaurant.entity.Restaurant;
 import me.tokyomap.domain.user.entity.User;
 
+
+/**
+ * ユーザーとレストランの「お気に入り」関係を表す中間エンティティ
+ * 同じユーザーが同じレストランを複数回登録できないようユニーク制約を設ける
+ */
 @Entity
 @Getter
 @NoArgsConstructor
@@ -24,12 +29,12 @@ public class Favorite extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //유저 연관관계
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    //음식점 연관관계
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;

@@ -14,6 +14,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * QueryDSLを使用してレビューの動的検索および統計を実装するリポジトリ
+ * ソート条件に応じてlikeCount・createdAtなどで並べ替え可能
+ */
 @Repository
 @RequiredArgsConstructor
 public class ReviewRepositoryImpl implements ReviewRepositoryCustom {

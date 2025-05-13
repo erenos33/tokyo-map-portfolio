@@ -20,7 +20,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
-@Tag(name = "Review", description = "리뷰 관련 API")
+/**
+ * レビュー作成、編集、削除、いいね、統計などのAPIを提供
+ */
+@Tag(name = "レビューAPI", description = "レビューの投稿・編集・削除・統計・いいね関連のAPI")
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -28,50 +31,73 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @Operation(summary = "리뷰 작성", description = "로그인한 사용자가 음식점에 리뷰를 작성합니다.")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * レビューを作成（ログイン必須）
+     */
     @PostMapping("/reviews")
+    @Operation(
+            summary = "レビュー投稿",
+            description = "ログイン中のユーザーが指定したレストランにレビューを投稿します。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<ReviewResponseDto> createReview(
             @Valid @RequestBody ReviewRequestDto dto,
-            Authentication authentication) {
-
-        //서비스 호출
+            Authentication authentication
+    ) {
         String email = authentication.getName();
         ReviewResponseDto response = reviewService.createReview(dto, email);
         return ApiResponse.success(response);
     }
 
-    @Operation(summary = "리뷰 수정", description = "리뷰를 수정하고, 수정된 정보를 반환합니다.")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * レビューを編集（本人のみ）
+     */
     @PutMapping("/reviews/{id}")
+    @Operation(
+            summary = "レビュー編集",
+            description = "ユーザーが自身のレビューを編集し、編集結果を返します。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<ReviewResponseDto> updateReview(
             @PathVariable Long id,
             @Valid @RequestBody ReviewRequestDto dto,
-            Authentication authentication) {
-
+            Authentication authentication
+    ) {
         String email = authentication.getName();
         ReviewResponseDto response = reviewService.updateReview(id, dto, email);
         return ApiResponse.success(response);
     }
 
-    @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다. 작성자 본인만 삭제할 수 있습니다.")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * レビューを削除（本人のみ）
+     */
     @DeleteMapping("/reviews/{id}")
+    @Operation(
+            summary = "レビュー削除",
+            description = "ユーザーが自身のレビューを削除します。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Void> deleteReview(
             @PathVariable Long id,
-            Authentication authentication) {
-
+            Authentication authentication
+    ) {
         String email = authentication.getName();
         reviewService.deleteReview(id, email);
         return ApiResponse.success();
     }
 
-    @Operation(summary = "음식점 리뷰 조회 (정렬 지원)", description = "정렬 조건에 따라 리뷰 목록을 조회합니다. createdAt 또는 likeCount 정렬 가능")
+    /**
+     * レストランのレビュー一覧を取得（ソート対応）
+     */
     @GetMapping("/restaurants/{restaurantId}/reviews")
+    @Operation(
+            summary = "レビュー一覧取得（ソート対応）",
+            description = "レビューを作成日時やいいね数などの条件で並べ替えて取得します。"
+    )
     public ApiResponse<Page<ReviewResponseDto>> getReviewsSorted(
             @PathVariable Long restaurantId,
-            @ParameterObject Pageable pageable) {
-
+            @ParameterObject Pageable pageable
+    ) {
         String sortProperty = "createdAt";
         Sort.Direction direction = Sort.Direction.DESC;
 
@@ -84,38 +110,59 @@ public class ReviewController {
         return ApiResponse.success(reviews);
     }
 
-
-    @Operation(summary = "리뷰 좋아요", description = "리뷰에 좋아요를 누릅니다. 로그인한 사용자만 가능합니다.")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * レビューにいいねを追加（ログイン必須）
+     */
     @PostMapping("/reviews/{id}/like")
+    @Operation(
+            summary = "レビューにいいね",
+            description = "レビューにいいねを追加します。ログインユーザーのみ可能です。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Void> likeReview(
             @PathVariable Long id,
             Authentication authentication) {
 
-        String email = authentication.getName();// 로그인 유저 이메일 추출
+        String email = authentication.getName();
         reviewService.likeReview(id, email);
-        return ApiResponse.success();// 바디 없음
+        return ApiResponse.success();
     }
 
-    @Operation(summary = "리뷰 좋아요 취소", description = "리뷰에 좋아요를 취소합니다. 로그인한 사용자만 가능합니다.")
-    @SecurityRequirement(name = "bearerAuth")
+    /**
+     * レビューのいいねを取り消し
+     */
     @DeleteMapping("/reviews/{id}/like")
+    @Operation(
+            summary = "レビューのいいね取り消し",
+            description = "レビューに追加したいいねを削除します。ログインユーザーのみ可能です。"
+    )
+    @SecurityRequirement(name = "bearerAuth")
     public ApiResponse<Void> unlikeReview(@PathVariable Long id, @AuthenticationPrincipal String email) {
         reviewService.unlikeReview(id, email);
         return ApiResponse.success();
     }
 
-    @Operation(summary = "리뷰 좋아요 수 조회", description = "리뷰의 총 좋아요 개수를 반환합니다.")
+    /**
+     * レビューのいいね数を取得
+     */
     @GetMapping("/reviews/{id}/likes/count")
+    @Operation(
+            summary = "レビューいいね数取得",
+            description = "指定されたレビューの総いいね数を取得します。"
+    )
     public ApiResponse<ReviewLikeCountResponseDto> getLikeCount(@PathVariable Long id) {
         return ApiResponse.success(reviewService.countLikesByReview(id));
     }
 
-    @Operation(summary = "리뷰 통계 조회", description = "해당 음식점의 평균 별점과 총 리뷰 수를 조회합니다.")
+    /**
+     * レストランのレビュー統計（平均評価・レビュー数）を取得
+     */
     @GetMapping("/restaurants/{restaurantId}/reviews/statistics")
+    @Operation(
+            summary = "レビュー統計取得",
+            description = "指定されたレストランの平均評価とレビュー件数を取得します。"
+    )
     public ApiResponse<ReviewStatisticsResponseDto> getReviewStatistics(@PathVariable Long restaurantId) {
         return ApiResponse.success(reviewService.getReviewStatistics(restaurantId));
     }
-
-    //이후 단계에서 각 메서드 추가(POST, PUT, DELETE, GET)
 }

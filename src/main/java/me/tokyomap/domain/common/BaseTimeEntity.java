@@ -10,6 +10,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+/**
+ * エンティティの作成日時と更新日時を自動で管理する基底クラス
+ * JPA Auditing機能を使用して、createdAt / updatedAt を自動設定する
+ */
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

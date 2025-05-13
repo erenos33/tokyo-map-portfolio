@@ -8,12 +8,13 @@ import java.util.List;
 public interface LocationRepository extends JpaRepository<Location, Long> {
 
     /**
-     * adminLevel2 (ex: Shibuya City) 기준으로 지역 조회
+     * adminLevel2（例: Shibuya City）に部分一致する地域を取得
      */
     List<Location> findByAdminLevel2ContainingIgnoreCase(String adminLevel2);
 
     /**
-     * adminLevel1 (ex: Tokyo) 기준으로 지역 조회
+     * ※ 現時点では未使用
+     * adminLevel1（例: Tokyo）に部分一致する地域を取得するための予備メソッド
      */
     List<Location> findByAdminLevel1ContainingIgnoreCase(String adminLevel1);
 }

@@ -8,6 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+/**
+ * レストランの永続化・検索処理を担うリポジトリ
+ * QueryDSLを用いた条件検索のため、RestaurantRepositoryCustomを継承
+ */
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long>, RestaurantRepositoryCustom {
     Optional<Restaurant> findByPlaceId(String placeId);
     Page<Restaurant> findByRegisteredBy(User user, Pageable pageable);
