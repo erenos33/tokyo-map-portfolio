@@ -14,36 +14,35 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+/**
+ * 認証に関するサービスの実装クラス
+ * ユーザーのログイン認証、トークン発行、検証済み状態の確認などを行う
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-
-    private static final String MSG_USER_NOT_FOUND = "존재하지 않는 유저입니다.";
-    private static final String MSG_EMAIL_NOT_VERIFIED = "이메일 인증이 완료되지 않았습니다.";
-    private static final String MSG_PASSWORD_MISMATCH = "비밀번호가 일치하지 않습니다.";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-
+    /**
+     * ログイン処理を行い、JWTトークンと有効期限を返す
+     * ユーザー検証 → メール認証チェック → パスワード一致検証の順で処理
+     */
     @Override
     public LoginResponseDto login(String email, String password) {
 
-        //1. 이메일로 유저 검색
         User user = EntityFinder.getUserOrThrow(userRepository, email);
 
-        //2. 이메일 인증 확인
         if (!user.isEmailVerified()) {
             throw new CustomException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
-        //3. 비밀번호 확인
         if(!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
-        //4. JWT 토큰 및 만료시간 발급
         String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole().name());
         Date expiresAt = jwtTokenProvider.getExpirationDate();
 

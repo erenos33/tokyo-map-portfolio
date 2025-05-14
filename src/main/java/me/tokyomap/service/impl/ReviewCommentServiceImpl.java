@@ -1,7 +1,6 @@
 package me.tokyomap.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import me.tokyomap.domain.review.entity.Review;
 import me.tokyomap.domain.review.entity.ReviewComment;
 import me.tokyomap.domain.review.repository.ReviewCommentRepository;
@@ -22,7 +21,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+/**
+ * レビューコメントに関するサービスの実装クラス
+ * コメントの作成・取得・更新・削除を担当
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,21 +34,17 @@ public class ReviewCommentServiceImpl implements ReviewCommentService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
 
-
-
+    /**
+     * 指定されたレビューにコメントを投稿する
+     */
     @Override
     @Transactional
     public void createComment(Long reviewId, ReviewCommentRequestDto dto, String email) {
 
-        log.info("리뷰 ID: {}, 유저 이메일: {}", reviewId, email);
-
-        //유저 검증
         User user = EntityFinder.getUserOrThrow(userRepository, email);
 
-        //리뷰 검증
         Review review = EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
 
-        //댓글 생성
         ReviewComment comment = ReviewComment.builder()
                 .review(review)
                 .user(user)
@@ -56,6 +54,10 @@ public class ReviewCommentServiceImpl implements ReviewCommentService {
         reviewCommentRepository.save(comment);
     }
 
+    /**
+     * 指定されたレビューIDに紐づくコメント一覧を取得（ページング対応）
+     * 現在のログインユーザーがコメントの作成者かどうかも含めて返す
+     */
     @Override
     public Page<ReviewCommentResponseDto> getCommentsByReviewId(Long reviewId, Pageable pageable) {
         EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
@@ -67,6 +69,9 @@ public class ReviewCommentServiceImpl implements ReviewCommentService {
                 .map(comment -> ReviewCommentMapper.toDto(comment, currentEmail));
     }
 
+    /**
+     * 自分が投稿したコメントを修正する（他人のコメントにはアクセス不可）
+     */
     @Override
     @Transactional
     public void updateComment(Long commentId, ReviewCommentRequestDto dto, String email) {
@@ -78,6 +83,9 @@ public class ReviewCommentServiceImpl implements ReviewCommentService {
         comment.setContent(dto.content());
     }
 
+    /**
+     * 自分が投稿したコメントを削除する（他人のコメントにはアクセス不可）
+     */
     @Override
     @Transactional
     public void deleteComment(Long commentId, String email) {
@@ -86,7 +94,6 @@ public class ReviewCommentServiceImpl implements ReviewCommentService {
         if (!comment.getUser().getEmail().equals(email)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_COMMENT_ACCESS);
         }
-
         reviewCommentRepository.delete(comment);
     }
 }

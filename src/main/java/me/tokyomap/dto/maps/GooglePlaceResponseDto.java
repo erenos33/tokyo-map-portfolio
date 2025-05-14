@@ -6,14 +6,18 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Google Place APIの検索結果レスポンスDTO
+ * 店舗リストと次ページ取得用トークンを含む
+ */
 @Data
-@Schema(description = "Google Place API 응답 DTO")
+@Schema(description = "Google Place API応答DTO")
 public class GooglePlaceResponseDto {
 
-    @Schema(description = "검색 결과 리스트")
+    @Schema(description = "検索結果リスト")
     private List<PlaceResult> results;
 
-    @Schema(description = "다음 페이지 토큰", example = "ATtYBwL1PvFJgW...")
+    @Schema(description = "次ページ取得用トークン", example = "ATtYBwL1PvFJgW...")
     @JsonProperty("next_page_token")
     private String nextPageToken;
 

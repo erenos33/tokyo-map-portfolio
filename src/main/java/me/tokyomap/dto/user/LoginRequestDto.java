@@ -6,17 +6,21 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * ログイン時に必要なユーザー認証情報を送信するためのリクエストDTO
+ * メールアドレスとパスワードを含む
+ */
 @Getter
 @Setter
-@Schema(description = "로그인 요청 DTO")
+@Schema(description = "ログインリクエストDTO")
 public class LoginRequestDto {
 
-    @Schema(description = "사용자 이메일 주소", example = "erenos33@gmail.com")
+    @Schema(description = "ユーザーのメールアドレス", example = "erenos33@gmail.com")
     @Email
     @NotBlank
     private String email;
 
-    @Schema(description = "비밀번호 (8-20자)", example = "12345678")
+    @Schema(description = "パスワード（8〜20文字）", example = "12345678")
     @NotBlank
     private String password;
 }

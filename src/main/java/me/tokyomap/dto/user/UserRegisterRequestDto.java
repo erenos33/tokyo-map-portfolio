@@ -7,23 +7,27 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 新規ユーザー登録時に必要な情報を受け取るリクエストDTO
+ * メールアドレス、パスワード、ニックネームを含む
+ */
 @Getter
 @Setter
-@Schema(description = "회원가입 요청 DTO")
+@Schema(description = "ユーザー登録リクエストDTO")
 public class UserRegisterRequestDto {
 
-    @Schema(description = "사용자 이메일 주소", example = "example@example.com")
-    @Email(message = "유효한 이메일 주소를 입력해주세요")
-    @NotBlank(message = "이메일은 필수입니다.")
+    @Schema(description = "ユーザーのメールアドレス", example = "example@example.com")
+    @Email(message = "有効なメールアドレスを入力してください")
+    @NotBlank(message = "メールアドレスは必須です。")
     private String email;
 
-    @Schema(description = "비밀번호 (8~20자)", example = "12345678")
-    @NotBlank(message = "비밀번호는 필수입니다.")
+    @Schema(description = "パスワード（8〜20文字）", example = "12345678")
+    @NotBlank(message = "パスワードは必須です。")
     @Size(min = 8, max = 20)
     private String password;
 
-    @Schema(description = "닉네임 (1~10자)", example = "도쿄맛집러")
-    @NotBlank(message = "닉네임은 필수입니다.")
+    @Schema(description = "ニックネーム（1〜10文字）", example = "東京グルメラバー")
+    @NotBlank(message = "ニックネームは必須です。")
     @Size(min = 1, max = 10)
     private String nickname;
 }

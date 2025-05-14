@@ -4,20 +4,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 緯度・経度・半径・キーワードを指定して位置情報検索を行うためのリクエストDTO
+ */
 @Getter
 @Setter
-@Schema(description = "위치 기반 검색 요청 DTO")
+@Schema(description = "位置情報検索リクエストDTO")
 public class LocationSearchRequestDto {
 
-    @Schema(description = "위도", example = "35.6895")
+    @Schema(description = "緯度", example = "35.6895")
     private double lat;
 
-    @Schema(description = "경도", example = "139.6917")
+    @Schema(description = "経度", example = "139.6917")
     private double lng;
 
-    @Schema(description = "검색 반경 (미터 단위)", example = "1000")
+    @Schema(description = "検索半径（メートル）", example = "1000")
     private int radius;
 
-    @Schema(description = "검색 키워드", example = "라멘")
+    @Schema(description = "検索キーワード", example = "ラーメン")
     private String keyword;
 }

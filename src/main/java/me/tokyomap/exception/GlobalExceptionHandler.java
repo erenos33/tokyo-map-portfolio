@@ -18,12 +18,20 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * アプリケーション全体で発生する例外を処理するグローバルハンドラー
+ * 各種例外に対応したエラーレスポンスを構築して返却する
+ */
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
 
+    /**
+     * カスタム例外（CustomException）を処理する
+     * ロケールに応じたメッセージを返す
+     */
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<Map<String, Object>> handleCustomException(CustomException ex) {
         ErrorCode errorCode = ex.getErrorCode();
@@ -42,6 +50,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, errorCode.getHttpStatus());
     }
 
+    /**
+     * その他の予期しない例外を処理する
+     * Swaggerアクセス時はそのままスロー、それ以外は500エラーとして処理
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex, HttpServletRequest request) {
         String uri = request.getRequestURI();
@@ -61,6 +73,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * バリデーションエラー（@Valid検証失敗）を処理する
+     * フィールドごとのエラーメッセージを含むレスポンスを返す
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errorMessages = ex.getBindingResult()
@@ -81,6 +97,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, errorCode.getHttpStatus());
     }
 
+    /**
+     * アクセス拒否または認証不足の例外を処理する
+     */
     @ExceptionHandler({ AccessDeniedException.class, AuthenticationCredentialsNotFoundException.class })
     public ResponseEntity<Map<String, Object>> handleAccessDenied(Exception ex) {
         ErrorCode errorCode = ErrorCode.AUTH_REQUIRED;

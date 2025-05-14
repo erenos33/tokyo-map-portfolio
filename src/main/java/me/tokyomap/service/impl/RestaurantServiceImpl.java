@@ -1,7 +1,7 @@
 package me.tokyomap.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import me.tokyomap.domain.restaurant.entity.Restaurant;
 import me.tokyomap.domain.restaurant.repository.RestaurantRepository;
 import me.tokyomap.domain.user.entity.User;
@@ -19,7 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+/**
+ * レストラン機能に関するサービスの実装クラス
+ * 検索、登録、取得、削除の各処理を担当
+ */
 @Service
 @RequiredArgsConstructor
 public class RestaurantServiceImpl implements RestaurantService {
@@ -27,6 +30,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 条件に応じてレストランを検索し、ページング形式で結果を返す
+     */
     @Override
     public Page<RestaurantSearchResponseDto> searchRestaurants(RestaurantSearchRequestDto requestDto, Pageable pageable) {
 
@@ -35,6 +41,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         return result.map(RestaurantMapper::toDto);
     }
 
+    /**
+     * IDで指定されたレストランの詳細情報を取得する
+     */
     @Override
     public RestaurantSearchResponseDto getRestaurantById(Long id) {
         Restaurant r = EntityFinder.getRestaurantOrThrow(restaurantRepository, id);
@@ -42,6 +51,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         return RestaurantMapper.toDto(r);
     }
 
+    /**
+     * Google検索結果から新しいレストランを登録する（重複Place IDはエラー）
+     */
     @Transactional
     @Override
     public Long registerGooglePlace(GooglePlaceRegisterRequestDto dto, String userEmail) {
@@ -58,6 +70,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurant.getId();
     }
 
+    /**
+     * 現在のユーザーが登録したレストラン一覧を取得する（ページング対応）
+     */
     @Transactional(readOnly = true)
     @Override
     public Page<RestaurantSearchResponseDto> getMyRegisteredRestaurants(String userEmail, Pageable pageable) {
@@ -68,18 +83,25 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .map(RestaurantMapper::toDto);
     }
 
+    /**
+     * 現在のユーザーが登録したレストランを削除する
+     * 他ユーザーの登録店舗にはアクセス不可（ACCESS_DENIED）
+     */
     @Transactional
     @Override
     public void deleteMyRestaurant(Long restaurantId, String userEmail) {
         Restaurant restaurant = EntityFinder.getRestaurantOrThrow(restaurantRepository, restaurantId);
 
         if (!restaurant.getRegisteredBy().getEmail().equals(userEmail)) {
-            throw new CustomException(ErrorCode.ACCESS_DENIED); // 내 음식점이 아니면 삭제 불가
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
 
         restaurantRepository.delete(restaurant);
     }
 
+    /**
+     * 管理者が任意のレストランを削除する（権限チェックはController側で）
+     */
     @Override
     public void deleteRestaurantByAdmin(Long restaurantId) {
         restaurantRepository.deleteById(restaurantId);

@@ -24,7 +24,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+/**
+ * レビューに関するビジネスロジックを提供するサービスの実装クラス
+ * 投稿、編集、削除、一覧取得、いいね処理、統計集計などを担当
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -35,19 +38,15 @@ public class ReviewServiceImpl implements ReviewService {
     private final RestaurantRepository restaurantRepository;
     private final ReviewLikeRepository reviewLikeRepository;
 
+    /**
+     * 新しいレビューを投稿する
+     */
     @Override
     @Transactional
     public ReviewResponseDto createReview(ReviewRequestDto dto, String email) {
-
-        // TODO: 리뷰에 이미지 첨부 기능 (S3 연동) 확장 고려
-
-        //유저 검증
         User user = EntityFinder.getUserOrThrow(userRepository, email);
-
-        //음식점 검증
         Restaurant restaurant = EntityFinder.getRestaurantOrThrow(restaurantRepository, dto.getRestaurantId());
 
-        //Review 엔티티 생성
         Review review = Review.builder()
                 .user(user)
                 .restaurant(restaurant)
@@ -55,35 +54,33 @@ public class ReviewServiceImpl implements ReviewService {
                 .rating(dto.getRating())
                 .build();
 
-        // TODO: 음식점 삭제 시 리뷰도 함께 삭제되도록 Cascade 설정 고려
-        // TODO: 리뷰에 좋아요/댓글 기능 추가 가능성 있음
-
-        //저장
         Review saved = reviewRepository.save(review);
         return ReviewMapper.toDto(saved);
     }
 
+    /**
+     * レビューを編集する（投稿者本人のみ可）
+     */
     @Override
     @Transactional
     public ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto dto, String email) {
 
-        //리뷰 조회
         Review review = EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
 
-        //작성자 검증
         if(!review.getUser().getEmail().equals(email)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REVIEW_ACCESS);
         }
 
-        //내용 수정
         review.setContent(dto.getContent());
         review.setRating(dto.getRating());
 
-        //지정(flush 보장)
         Review updated = reviewRepository.save(review);
         return ReviewMapper.toDto(updated);
     }
 
+    /**
+     * レビューを削除する（投稿者本人のみ可）
+     */
     @Override
     @Transactional
     public void deleteReview(Long reviewId, String email) {
@@ -96,35 +93,35 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.delete(review);
     }
 
+    /**
+     * 指定されたレストランに紐づくレビュー一覧を取得（ページング対応）
+     */
     @Override
     public Page<ReviewResponseDto> getReviewsByRestaurant(Long restaurantId, Pageable pageable) {
         EntityFinder.getRestaurantOrThrow(restaurantRepository, restaurantId);
 
         return reviewRepository.findByRestaurantId(restaurantId, pageable)
                 .map(ReviewMapper::toDto);
-        // TODO: 평점순, 최신순 등 정렬 옵션 추가 가능성 있음
     }
 
+    /**
+     * 指定されたレビューに「いいね」を追加する（重複防止）
+     */
     @Override
     @Transactional(readOnly = false)
     public void likeReview(Long reviewId, String email) {
-
-
-        //사용자 인증
         User user = EntityFinder.getUserOrThrow(userRepository, email);
-
-        //리뷰 존재 확인
         Review review = EntityFinder.getReviewOrThrow(reviewRepository, reviewId);
 
-        //이미 좋아요 했는지 확인
         if (reviewLikeRepository.existsByUserAndReview(user, review)) {
             throw new CustomException(ErrorCode.ALREADY_LIKED_REVIEW);
         }
-
-        //좋아요 저장
         reviewLikeRepository.save(new ReviewLike(user, review));
     }
 
+    /**
+     * 指定されたレビューへの「いいね」を取り消す
+     */
     @Override
     @Transactional(readOnly = false)
     public void unlikeReview(Long reviewId, String email) {
@@ -139,6 +136,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     }
 
+    /**
+     * 特定のレビューに対する「いいね」件数を取得する
+     */
     @Override
     @Transactional(readOnly = true)
     public ReviewLikeCountResponseDto countLikesByReview(Long reviewId) {
@@ -149,12 +149,18 @@ public class ReviewServiceImpl implements ReviewService {
         return new ReviewLikeCountResponseDto(reviewId, count);
     }
 
+    /**
+     * ソート条件付きでレビュー一覧を取得する（ページング対応）
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<ReviewResponseDto> getReviewsWithSort(Long restaurantId, String sortProperty, Sort.Direction direction, Pageable pageable) {
         return reviewRepository.searchReviewsWithSorting(restaurantId, sortProperty, direction, pageable);
     }
 
+    /**
+     * 指定されたレストランのレビュー統計情報（平均スコア・件数）を取得する
+     */
     @Override
     @Transactional(readOnly = true)
     public ReviewStatisticsResponseDto getReviewStatistics(Long restaurantId) {

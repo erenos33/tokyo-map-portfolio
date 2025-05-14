@@ -19,25 +19,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * 공통 Entity 조회 및 페이지 처리 유틸
- * - 유저, 음식점 등 도메인 객체 조회
- * - Pageable 정리
- * - 현재 로그인 유저 이메일 조회
+ * 各種エンティティの取得およびページネーション関連のユーティリティクラス
+ * - ユーザーやレストランなどのドメインオブジェクトをIDまたはメールで取得
+ * - Pageable生成
+ * - 現在ログイン中のユーザー情報取得
  */
 @UtilityClass
 public class EntityFinder {
 
     /**
-     * 이메일로 유저 조회 후 없으면 예외
+     * メールアドレスに基づいてユーザーを取得。存在しない場合は例外をスローする
      */
-
     public User getUserOrThrow(UserRepository userRepository, String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     /**
-     * 음식점 ID로 조회 후 없으면 예외
+     * レストランIDで検索し、存在しなければ例外をスローする
      */
     public Restaurant getRestaurantOrThrow(RestaurantRepository repository, Long id) {
         return repository.findById(id)
@@ -45,25 +44,31 @@ public class EntityFinder {
     }
 
     /**
-     * 정렬 가능한 Pageable 생성기
+     * ソート条件付きのPageableを生成する
      */
     public Pageable createPageRequest(int page, int size, String sortProperty, Sort.Direction direction) {
         return PageRequest.of(page, size, Sort.by(direction, sortProperty));
     }
 
     /**
-     * 현재 로그인한 사용자의 이메일 반환
+     * 現在ログイン中のユーザーのメールアドレスを取得する
      */
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (authentication != null) ? authentication.getName() : null;
     }
 
+    /**
+     * レビューIDで検索し、存在しなければ例外をスローする
+     */
     public Review getReviewOrThrow(ReviewRepository repository, Long reviewId) {
         return repository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
 
+    /**
+     * コメントIDで検索し、存在しなければ例外をスローする
+     */
     public static ReviewComment getCommentOrThrow(ReviewCommentRepository repository, Long commentId) {
         return repository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));

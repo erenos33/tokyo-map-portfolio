@@ -4,23 +4,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
+/**
+ * レビューコメントのレスポンスDTO
+ * コメントの内容、作成者、作成日時、自分のコメントかどうかなどを含む
+ */
 public record ReviewCommentResponseDto(
-        @Schema(description = "댓글 ID", example = "1")
+        @Schema(description = "コメントID", example = "1")
         Long id,
 
-        @Schema(description = "댓글 내용", example = "정말 공감돼요!")
+        @Schema(description = "コメント内容", example = "とても共感できます！")
         String content,
 
-        @Schema(description = "작성자 닉네임", example = "도쿄맛집러버")
+        @Schema(description = "投稿者のニックネーム", example = "東京グルメラバー")
         String nickname,
 
-        @Schema(description = "작성일자", example = "2025-04-23T12:40:00")
+        @Schema(description = "作成日時", example = "2025-04-23T12:40:00")
         LocalDateTime createdAt,
 
-        @Schema(description = "현재 로그인한 유저가 댓글 작성자인지 여부", example = "true")
+        @Schema(description = "現在のログインユーザーが作成者かどうかを示すフラグ", example = "true")
         boolean isAuthor
-
-
-
 ) {
 }

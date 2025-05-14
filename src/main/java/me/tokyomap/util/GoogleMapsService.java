@@ -1,6 +1,5 @@
 package me.tokyomap.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import me.tokyomap.dto.maps.GooglePlaceDetailResponseDto;
 import me.tokyomap.dto.maps.GooglePlaceResponseDto;
 import me.tokyomap.dto.maps.GooglePlaceDetailWrapper;
@@ -13,6 +12,10 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
+/**
+ * Google Maps APIとの連携を行うユーティリティサービスクラス
+ * テキスト検索・位置検索・詳細情報取得・ページング対応などを提供
+ */
 @Service
 public class GoogleMapsService {
 
@@ -27,6 +30,10 @@ public class GoogleMapsService {
                 .build();
     }
 
+    /**
+     * キーワードと都市名からプレーンなテキスト検索を実行する
+     * 応答は生のJSON文字列として返される（デバッグ用など）
+     */
     public Mono<String> searchPlaces(String keyword, String location) {
         return webClient.get()
                 .uri(u -> u.path("/place/textsearch/json")
@@ -37,6 +44,9 @@ public class GoogleMapsService {
                 .bodyToMono(String.class);
     }
 
+    /**
+     * 緯度・経度・検索半径・キーワードを指定して、Google Maps上でレストランを検索する
+     */
     public Mono<GooglePlaceResponseDto> searchByLocation(String keyword, double lat, double lng, int radius) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -56,6 +66,9 @@ public class GoogleMapsService {
                 .bodyToMono(GooglePlaceResponseDto.class);
     }
 
+    /**
+     * 都市名とキーワードによる最初のページの検索結果を取得する
+     */
     public Mono<GooglePlaceResponseDto> searchFirstPage(String keyword, String location) {
         return webClient.get()
                 .uri(u -> u.path("/place/textsearch/json")
@@ -70,6 +83,9 @@ public class GoogleMapsService {
                 .bodyToMono(GooglePlaceResponseDto.class);
     }
 
+    /**
+     * next_page_tokenを利用して次のページの検索結果を取得する（2秒遅延付き）
+     */
     public Mono<GooglePlaceResponseDto> searchNextPage(String nextPageToken) {
         return Mono.delay(Duration.ofSeconds(2))
                 .flatMap(ignore -> webClient.get()
@@ -86,6 +102,9 @@ public class GoogleMapsService {
                 );
     }
 
+    /**
+     * Google Place IDを指定して、詳細情報（住所・電話・価格帯・営業時間）を取得する
+     */
     public Mono<GooglePlaceDetailResponseDto> getPlaceDetail(String placeId) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder

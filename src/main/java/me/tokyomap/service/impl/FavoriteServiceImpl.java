@@ -20,6 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * お気に入り機能に関するサービスの実装クラス
+ * 登録・解除・確認・一覧取得の処理を担当
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,6 +33,10 @@ public class FavoriteServiceImpl implements FavoriteService {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
 
+    /**
+     * 指定されたレストランをユーザーのお気に入りに登録する
+     * すでに登録済みであれば例外をスロー
+     */
     @Override
     @Transactional
     public void addFavorite(String email, FavoriteRequestDto requestDto) {
@@ -48,6 +56,10 @@ public class FavoriteServiceImpl implements FavoriteService {
         favoriteRepository.save(favorite);
     }
 
+    /**
+     * ユーザーのお気に入りから指定されたレストランを削除する
+     * 登録されていない場合は例外をスロー
+     */
     @Override
     @Transactional
     public void removeFavorite(String email, FavoriteRequestDto requestDto) {
@@ -61,6 +73,9 @@ public class FavoriteServiceImpl implements FavoriteService {
         favoriteRepository.delete(favorite);
     }
 
+    /**
+     * 指定されたレストランが現在のお気に入りに含まれているかを確認する
+     */
     @Override
     public FavoriteCheckResponseDto checkFavorite(String email, Long restaurantId) {
         User user = EntityFinder.getUserOrThrow(userRepository, email);
@@ -72,6 +87,9 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     }
 
+    /**
+     * 現在のユーザーがお気に入り登録したレストランの一覧を取得（ページング対応）
+     */
     @Override
     public Page<FavoriteRestaurantResponseDto> getMyFavorites(String email, Pageable pageable) {
         User user = EntityFinder.getUserOrThrow(userRepository, email);

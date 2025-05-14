@@ -3,6 +3,10 @@ package me.tokyomap.dto.maps;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+/**
+ * Google Place APIから取得される詳細情報のDTO
+ * 電話番号、価格帯、営業時間、住所などを含む
+ */
 @Data
 public class GooglePlaceDetailResponseDto {
 
@@ -17,6 +21,4 @@ public class GooglePlaceDetailResponseDto {
 
     @JsonProperty("formatted_address")
     private String formattedAddress;
-
-    // 필요한 경우 name, address 등도 추가 가능
 }

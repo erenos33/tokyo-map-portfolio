@@ -5,18 +5,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * レストラン検索のためのリクエストDTO
+ * カテゴリ、都市名、現在営業中かどうかのフィルターを含む
+ */
 @Getter
 @Setter
 @AllArgsConstructor
 public class RestaurantSearchRequestDto {
 
-    @Schema(description = "음식 카테고리", example = "스시")
+    @Schema(description = "料理カテゴリ", example = "寿司")
     private String category;
 
-    @Schema(description = "도시 또는 구 이름", example = "신주쿠")
+    @Schema(description = "都市または区の名称", example = "新宿")
     private String city;
 
-    @Schema(description = "현재 영업 중인 맛집만 필터링할지 여부", example = "true")
+    @Schema(description = "現在営業中の店舗のみを対象とするかを示すフラグ", example = "true")
     private Boolean openNow;
 
 

@@ -5,35 +5,39 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * レストラン検索結果1件分のレスポンスDTO
+ * 店舗の基本情報（ID、名称、住所、位置、評価、営業時間など）を含む
+ */
 @Getter
 @Builder
 @AllArgsConstructor
 public class RestaurantSearchResponseDto {
 
-    @Schema(description = "음식점 ID", example = "1")
+    @Schema(description = "レストランID", example = "1")
     private Long id;
 
-    @Schema(description = "음식점 이름", example = "Sushi Tokyo")
+    @Schema(description = "店舗名", example = "Sushi Tokyo")
     private String name;
 
-    @Schema(description = "주소", example = "Tokyo, Shibuya, ...")
+    @Schema(description = "住所", example = "Tokyo, Shibuya, ...")
     private String address;
 
-    @Schema(description = "위도", example = "35.658034")
+    @Schema(description = "緯度", example = "35.658034")
     private Double latitude;
 
-    @Schema(description = "경도", example = "139.701636")
+    @Schema(description = "経度", example = "139.701636")
     private Double longitude;
 
-    @Schema(description = "평점", example = "4.5")
+    @Schema(description = "平均評価", example = "4.5")
     private Double rating;
 
-    @Schema(description = "영업시간", example = "월~일 11:00–22:00")
+    @Schema(description = "営業時間", example = "월~일 11:00–22:00")
     private String openingHours;
 
-    @Schema(description = "가격대", example = "₩₩₩")
+    @Schema(description = "価格帯", example = "₩₩₩")
     private String priceRange;
 
-    @Schema(description = "전화번호", example = "03-1234-5678")
+    @Schema(description = "電話番号", example = "03-1234-5678")
     private String phoneNumber;
 }

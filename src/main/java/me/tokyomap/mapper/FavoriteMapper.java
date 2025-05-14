@@ -4,7 +4,13 @@ import me.tokyomap.domain.favorite.entity.Favorite;
 import me.tokyomap.domain.restaurant.entity.Restaurant;
 import me.tokyomap.dto.favorite.FavoriteRestaurantResponseDto;
 
+/**
+ * FavoriteエンティティをFavoriteRestaurantResponseDtoに変換するマッパークラス
+ */
 public class FavoriteMapper {
+    /**
+     * お気に入り情報をレスポンスDTOに変換する
+     */
     public static FavoriteRestaurantResponseDto toDto(Favorite favorite) {
         Restaurant r = favorite.getRestaurant();
         return FavoriteRestaurantResponseDto.builder()

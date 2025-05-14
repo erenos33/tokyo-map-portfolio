@@ -8,33 +8,41 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * レビュー情報を返すレスポンスDTO
+ * 投稿者情報、レビュー内容、評価、投稿日時、いいね数を含む
+ */
 @Data
 @NoArgsConstructor
 @Builder
-@Schema(description = "리뷰 응답 DTO")
+@Schema(description = "レビュー応答DTO")
 public class ReviewResponseDto {
 
-    @Schema(description = "리뷰 ID", example = "1")
+    @Schema(description = "レビューID", example = "1")
     private Long id;
 
-    @Schema(description = "작성자 ID", example = "42")
+    @Schema(description = "投稿者ID", example = "42")
     private Long authorId;
 
-    @Schema(description = "작성자 닉네임", example = "도쿄맛집러버")
+    @Schema(description = "投稿者のニックネーム", example = "東京グルメラバー")
     private String nickname;
 
-    @Schema(description = "리뷰 본문", example = "돈카츠가 바삭하고 너무 맛있었어요!")
+    @Schema(description = "レビュー本文", example = "とんかつがサクサクでとても美味しかったです！")
     private String content;
 
-    @Schema(description = "평점", example = "5")
+    @Schema(description = "評価スコア", example = "5")
     private int rating;
 
-    @Schema(description = "작성일자", example = "2025-04-18T13:45:30")
+    @Schema(description = "投稿日時", example = "2025-04-18T13:45:30")
     private LocalDateTime createdAt;
 
-    @Schema(description = "좋아요 수", example = "3")
+    @Schema(description = "いいね数", example = "3")
     private Long likeCount;
 
+    /**
+     * クエリで直接DTOを生成するためのコンストラクタ
+     * 投稿者情報、レビュー内容、評価、作成日時、いいね数を初期化する
+     */
     @QueryProjection
     public ReviewResponseDto(Long id, Long authorId, String nickname, String content, int rating, LocalDateTime createdAt, Long likeCount) {
         this.id = id;
