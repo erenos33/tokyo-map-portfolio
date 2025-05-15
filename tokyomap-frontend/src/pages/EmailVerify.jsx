@@ -1,4 +1,3 @@
-// EmailVerify.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -7,6 +6,7 @@ export default function EmailVerify() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    // 状態：メール、認証コード、表示メッセージ、送信中フラグ
     const [email] = useState(
         location.state?.email ||
         localStorage.getItem('pendingEmail') ||
@@ -16,6 +16,7 @@ export default function EmailVerify() {
     const [message, setMessage] = useState('');
     const [sending, setSending] = useState(false);
 
+    // 認証コードを再送信する処理
     const handleResend = async () => {
         if (!email) return;
         setSending(true);
@@ -25,27 +26,27 @@ export default function EmailVerify() {
                 null,
                 { params: { email } }
             );
-            setMessage('✅ 인증 코드 다시 발송 완료! 이메일을 확인하세요.');
+            setMessage('認証コードを再送信しました。メールをご確認ください。');
             localStorage.setItem('pendingEmail', email);
         } catch (err) {
-            console.error('❌ 재발송 실패', err);
-            setMessage('❌ 인증 코드를 다시 발송하는 데 실패했습니다.');
+            console.error('再送信失敗', err);
+            setMessage('認証コードの再送信に失敗しました。');
         } finally {
             setSending(false);
         }
     };
 
+    // 認証コードを検証する処理
     const handleVerify = async () => {
         const trimmed = code.trim();
         if (!email || !trimmed) {
-            setMessage('❌ 이메일과 인증 코드를 모두 입력해주세요.');
+            setMessage('メールアドレスと認証コードを入力してください。');
             return;
         }
 
         try {
-            console.log('📦 최종 요청 payload', { email, code: trimmed });
+            console.log('📦リクエスト送信内容:', { email, code: trimmed });
 
-            // HTTP 200 이면 무조건 성공 처리
             await axios.post(
                 'http://localhost:8080/api/email/verify',
                 { email, code: trimmed },
@@ -53,27 +54,28 @@ export default function EmailVerify() {
             );
 
             localStorage.removeItem('pendingEmail');
-            setMessage('✅ 인증 성공! 메인페이지로 이동 중...');
+            setMessage('認証に成功しました。メインページへ移動します。');
             setTimeout(() => navigate('/'), 1000);
         } catch (err) {
             const errorMsg = err.response?.data?.message || err.message;
-            console.error('❌ 인증 실패 상세:', err.response?.data || err);
-            setMessage(`❌ 인증 실패: ${errorMsg}`);
+            console.error('認証失敗詳細:', err.response?.data || err);
+            setMessage(`認証に失敗しました: ${errorMsg}`);
         }
     };
 
     return (
         <div className="bg-gray-100 min-h-screen py-10 px-4">
             <div className="max-w-md mx-auto bg-white p-6 rounded-xl shadow text-center">
-                <h2 className="text-2xl font-bold mb-4">🔐 이메일 인증 확인</h2>
+                <h2 className="text-2xl font-bold mb-4">🔐メール認証確認</h2>
                 <p className="mb-6">
-                    <span className="font-semibold text-blue-600">{email}</span>로 받은 인증 코드를 입력하세요.
+                    メールアドレス
+                    <span className="font-semibold text-blue-600">{email}</span>に送信された認証コードを入力してください。
                 </p>
                 <input
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    placeholder="인증 코드"
+                    placeholder="認証コード"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
                 />
 
@@ -81,7 +83,7 @@ export default function EmailVerify() {
                     onClick={handleVerify}
                     className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
                 >
-                    ✅ 인증 확인
+                    認証を確認する
                 </button>
 
                 <button
@@ -89,7 +91,7 @@ export default function EmailVerify() {
                     disabled={sending}
                     className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded"
                 >
-                    {sending ? '⏳ 재발송 중...' : '🔄 인증 코드 재발송'}
+                    {sending ? '再送信中...' : '認証コードを再送信'}
                 </button>
 
                 {message && (

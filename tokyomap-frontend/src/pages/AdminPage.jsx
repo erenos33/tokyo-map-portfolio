@@ -3,6 +3,7 @@ import axiosInstance from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
+    // 状態変数の定義（メッセージ、検索条件、結果など）
     const [message, setMessage] = useState('');
     const [category, setCategory] = useState('');
     const [city, setCity] = useState('');
@@ -11,18 +12,20 @@ const AdminPage = () => {
     const [expandedHours, setExpandedHours] = useState({});
     const navigate = useNavigate();
 
+    // 管理者ページアクセス時に認証チェックを行う
     useEffect(() => {
         const fetchAdminPage = async () => {
             try {
                 const response = await axiosInstance.get('/auth/admin/only');
                 setMessage(response.data.data);
             } catch {
-                setMessage('❌ 접근 실패 - 관리자 권한 필요');
+                setMessage('アクセスに失敗しました（管理者権限が必要です）');
             }
         };
         fetchAdminPage();
     }, []);
 
+    // 飲食店をカテゴリ・都市・営業時間条件で検索する
     const searchRestaurants = async () => {
         try {
             const res = await axiosInstance.get('/restaurants/search', {
@@ -30,7 +33,7 @@ const AdminPage = () => {
             });
             setRestaurantList(res.data.data.content);
         } catch {
-            alert('DB 검색 실패');
+            alert('データベース検索に失敗しました');
         }
     };
 
@@ -38,7 +41,7 @@ const AdminPage = () => {
         setExpandedHours(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
-    // summarizeHours: today closing summary (same logic as MyRestaurantPage)
+    // 営業終了時間を要約して表示する関数（曜日別テキストから抽出）
     const summarizeHours = (hoursText) => {
         if (!hoursText) return '';
         const match = hoursText
@@ -48,11 +51,11 @@ const AdminPage = () => {
             ?.match(/(\d{1,2}:\d{2})\s*([AP]M)\s*[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
         if (!match) return '';
         const [, , , endTime, endPeriod] = match;
-        const kor = endPeriod === 'AM' ? '오전' : '오후';
-        return `${kor} ${endTime}에 영업 종료`;
+        const kor = endPeriod === 'AM' ? '午前' : '午後';
+        return `${kor} ${endTime}に営業終了`;
     };
 
-    // isOpenNow: same robust logic
+    // 現在営業中かどうかを判定するロジック
     const isOpenNow = (hoursText) => {
         if (!hoursText) return false;
         const todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long' }) + ':';
@@ -77,32 +80,33 @@ const AdminPage = () => {
         return nowMin >= startMin || nowMin <= endMin;
     };
 
+    // 飲食店を削除する（確認ダイアログあり）
     const deleteRestaurant = async (id) => {
-        if (!window.confirm('정말 삭제하시겠습니까?')) return;
+        if (!window.confirm('本当に削除しますか？')) return;
         try {
             await axiosInstance.delete(`/restaurants/${id}`);
             setRestaurantList(prev => prev.filter(r => r.id !== id));
         } catch {
-            alert('삭제 실패');
+            alert('削除に失敗しました');
         }
     };
 
     return (
         <div className="bg-gray-100 min-h-screen py-10 px-4">
             <div className="max-w-4xl mx-auto">
-                <h2 className="text-2xl font-bold mb-4">👑 관리자 전용 페이지</h2>
+                <h2 className="text-2xl font-bold mb-4">管理者専用ページ</h2>
                 <p className="mb-6">{message}</p>
-                <h3 className="text-xl font-semibold mb-4">📋 DB 맛집 검색</h3>
+                <h3 className="text-xl font-semibold mb-4">データベース飲食店検索</h3>
                 <div className="bg-white p-6 rounded-xl shadow space-y-4 mb-10">
                     <input
                         className="w-full px-3 py-2 border"
-                        placeholder="카테고리"
+                        placeholder="カテゴリ"
                         value={category}
                         onChange={e => setCategory(e.target.value)}
                     />
                     <input
                         className="w-full px-3 py-2 border"
-                        placeholder="도시"
+                        placeholder="都市"
                         value={city}
                         onChange={e => setCity(e.target.value)}
                     />
@@ -112,12 +116,12 @@ const AdminPage = () => {
                             className="mr-2"
                             checked={openNow}
                             onChange={() => setOpenNow(!openNow)}
-                        /> 현재 영업중만 보기
+                        /> 現在営業中のみ表示
                     </label>
                     <button
                         className="btn w-full bg-blue-600 text-white py-2 rounded"
                         onClick={searchRestaurants}
-                    >DB 맛집 검색</button>
+                    >飲食店を検索</button>
                 </div>
 
                 {restaurantList.length > 0 && (
@@ -127,13 +131,13 @@ const AdminPage = () => {
                             return (
                                 <div key={r.id} className="bg-white p-5 rounded-xl shadow-md space-y-2">
                                     <h4 className="text-lg font-bold">{r.name}</h4>
-                                    <p>📍 <span className="font-medium">주소:</span> {r.address}</p>
-                                    <p>⭐ <span className="font-medium">평점:</span> {r.rating ?? '정보 없음'}</p>
-                                    <p className="mt-2">⏰ 영업시간: {' '}
+                                    <p><span className="font-medium">住所:</span> {r.address}</p>
+                                    <p><span className="font-medium">評価:</span> {r.rating ?? '情報なし'}</p>
+                                    <p className="mt-2">営業状況: {' '}
                                         <div className="flex items-center space-x-1 cursor-pointer" onClick={() => toggleHours(r.id)}>
                                             {open
-                                                ? <span className="text-green-600">영업 중</span>
-                                                : <span className="text-red-500">영업 전</span>}
+                                                ? <span className="text-green-600">営業中</span>
+                                                : <span className="text-red-500">営業時間外</span>}
                                             <span>· {summarizeHours(r.openingHours)}</span>
                                             <span>{expandedHours[r.id] ? '▲' : '▼'}</span>
                                         </div>
@@ -145,10 +149,10 @@ const AdminPage = () => {
                                             ))}
                                         </ul>
                                     )}
-                                    <p>💰 <span className="font-medium">가격대:</span> {r.priceRange?.trim() || '정보 없음'}</p>
-                                    <p>☎ <span className="font-medium">전화번호:</span> {r.phoneNumber?.trim() || '정보 없음'}</p>
+                                    <p>💰 <span className="font-medium">価格帯:</span> {r.priceRange?.trim() || '情報なし'}</p>
+                                    <p>☎ <span className="font-medium">電話番号:</span> {r.phoneNumber?.trim() || '情報なし'}</p>
                                     <button onClick={() => deleteRestaurant(r.id)} className="btn bg-red-500 hover:bg-red-600 mt-2 text-white px-4 py-2 rounded">
-                                        🗑️ 삭제하기
+                                        削除する
                                     </button>
                                 </div>
                             );
@@ -160,7 +164,7 @@ const AdminPage = () => {
                         className="btn bg-blue-500 hover:bg-blue-600 text-white"
                         onClick={() => window.location.href = '/'}
                     >
-                        ⬅️ 메인페이지로 돌아가기
+                        メインページに戻る
                     </button>
                 </div>
             </div>

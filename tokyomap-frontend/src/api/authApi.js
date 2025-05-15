@@ -1,4 +1,6 @@
-// 최종 수정된 authApi.js
+// authApi.js（認証テスト用API呼び出し）
+
+// ユーザーページ情報を取得
 export async function fetchUserPage() {
     const token = localStorage.getItem('accessToken');
     try {
@@ -11,17 +13,18 @@ export async function fetchUserPage() {
             const result = await res.json();
             return result.data;
         } else {
-            return '❌ 접근 실패 (사용자)';
+            return 'アクセスに失敗しました（ユーザー）';
         }
     } catch (e) {
-        return '❌ 서버 오류';
+        return 'サーバーエラーが発生しました';
     }
 }
 
+// 管理者専用ページ情報を取得
 export async function fetchAdminPage() {
     const token = localStorage.getItem('accessToken');
     try {
-        const res = await fetch('http://localhost:8080/api/auth/admin/only', {  // ✅ 경로 수정
+        const res = await fetch('http://localhost:8080/api/auth/admin/only', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -30,9 +33,9 @@ export async function fetchAdminPage() {
             const result = await res.json();
             return result.data; // 🔥 data 꺼내기
         } else {
-            return '❌ 접근 실패 (관리자 전용)';
+            return 'アクセスに失敗しました（管理者専用）';
         }
     } catch (e) {
-        return '❌ 서버 오류';
+        return 'サーバーエラーが発生しました';
     }
 }

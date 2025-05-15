@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +7,7 @@ export default function Login() {
     const [message, setMessage]   = useState('');
     const navigate                = useNavigate();
 
+    // ログイン処理
     const handleLogin = async () => {
         try {
             const res = await fetch('http://localhost:8080/api/auth/login', {
@@ -19,9 +19,9 @@ export default function Login() {
             if (!res.ok) {
                 const errorData = await res.json();
 
-                // 이메일 인증이 안 된 경우 → 메시지 보여주고 2초 뒤 리다이렉트
+                // メール認証が未完了の場合、認証ページにリダイレクト
                 if (errorData.errorCode === 'EMAIL_NOT_VERIFIED') {
-                    setMessage('🔔 이메일 인증이 필요합니다. 인증 메일페이지로 이동합니다.');
+                    setMessage('メール認証が必要です。認証ページに移動します。');
                     localStorage.setItem('pendingEmail', email);
                     setTimeout(() => {
                         navigate(`/email/send?email=${encodeURIComponent(email)}`);
@@ -29,38 +29,38 @@ export default function Login() {
                     return;
                 }
 
-                // 그 외 로그인 실패
-                setMessage('❌ 로그인 실패');
+                // その他のログイン失敗
+                setMessage('ログインに失敗しました。');
                 return;
             }
 
-            // 로그인 성공
+            // ログイン成功時、トークン保存とリダイレクト
             const result = await res.json();
             const { accessToken, expiresAt, role } = result.data;
 
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('expiresAt', expiresAt);
             localStorage.setItem('userRole', role);
-            setMessage('✅ 로그인 성공! 메인페이지로 이동 중...');
+            setMessage('ログインに成功しました。メインページへ移動します。');
             setTimeout(() => navigate('/'), 1000);
         } catch (e) {
-            console.error('로그인 에러:', e);
-            setMessage('❌ 서버 오류');
+            console.error('ログインエラー:', e);
+            setMessage('サーバーエラーが発生しました。');
         }
     };
 
     return (
         <div className="bg-gray-100 min-h-screen py-10 px-4">
             <div className="max-w-md mx-auto bg-white p-6 rounded-xl shadow">
-                <h2 className="text-2xl font-bold mb-6 text-center">🔑 로그인</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center">ログイン</h2>
 
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        이메일
+                        メールアドレス
                     </label>
                     <input
                         type="email"
-                        placeholder="이메일"
+                        placeholder="メールアドレスを入力"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400"
@@ -69,11 +69,11 @@ export default function Login() {
 
                 <div className="mb-6">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        비밀번호
+                        パスワード
                     </label>
                     <input
                         type="password"
-                        placeholder="비밀번호"
+                        placeholder="パスワードを入力"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400"
@@ -84,7 +84,7 @@ export default function Login() {
                     onClick={handleLogin}
                     className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
                 >
-                    로그인
+                    ログイン
                 </button>
 
                 {message && (
