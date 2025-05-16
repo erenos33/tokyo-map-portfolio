@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 
 export default function RestaurantPage() {
+    // 検索キーワード、位置、モードなどの状態管理
     const [keyword, setKeyword] = useState('');
     const [location, setLocation] = useState('Tokyo');
     const [searchMode, setSearchMode] = useState('city');
@@ -10,9 +11,10 @@ export default function RestaurantPage() {
     const [expandedHours, setExpandedHours] = useState({});
     const [currentCoords, setCurrentCoords] = useState(null);
 
+    // 営業時間の展開・非展開を切り替え
     const toggleHours = (placeId) =>
         setExpandedHours(prev => ({ ...prev, [placeId]: !prev[placeId] }));
-    const priceLabels = ['', '저렴', '보통', '비싸', '매우 비싸'];
+    const priceLabels = ['', '安い', '普通', '高い', '非常に高い'];
 
     const summarizeHours = (opening_hours) => {
         if (
@@ -30,12 +32,13 @@ export default function RestaurantPage() {
         const [start, end] = parts[1].split('–').map(s => s.trim());
         const timeToUse = opening_hours.open_now ? end : start;
         const [timeStr, period] = timeToUse.split(' ');
-        const korPeriod = period === 'AM' ? '오전' : '오후';
-        const action = opening_hours.open_now ? '영업 종료' : '영업 시작';
+        const korPeriod = period === 'AM' ? '午前' : '午後';
+        const action = opening_hours.open_now ? '営業終了' : '営業開始';
 
         return `${korPeriod} ${timeStr}에 ${action}`;
     };
 
+    // Google詳細情報取得API呼び出し
     const fetchPlaceDetail = async (placeId) => {
         try {
             const resp = await axiosInstance.get('/maps/detail', {
@@ -43,14 +46,15 @@ export default function RestaurantPage() {
             });
             return resp.data;
         } catch (e) {
-            console.error('📡 상세정보 불러오기 실패', e);
+            console.error('詳細情報取得に失敗', e);
             return {};
         }
     };
 
+    // ログインユーザーによるGoogleプレイスの登録処理
     const registerGooglePlace = async (place) => {
         const token = localStorage.getItem('accessToken');
-        if (!token) return alert('로그인이 필요합니다');
+        if (!token) return alert('ログインが必要です');
         const dto = {
             placeId: place.placeId,
             name: place.name,
@@ -74,13 +78,14 @@ export default function RestaurantPage() {
                 dto,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            alert('✅ 등록 성공! ID: ' + resp.data.data);
+            alert('登録に成功しました。ID: ' + resp.data.data);
         } catch (e) {
-            console.error('🚨 등록 실패', e);
-            alert('등록에 실패했습니다');
+            console.error('登録失敗', e);
+            alert('登録に失敗しました');
         }
     };
 
+    // 都市名とキーワードによるGoogleプレイス検索
     const searchGooglePlaces = async () => {
         try {
             const resp = await axiosInstance.get('/maps/search', {
@@ -95,13 +100,14 @@ export default function RestaurantPage() {
             setGoogleResults(enriched);
             setNextPageToken(resp.data.next_page_token);
         } catch (e) {
-            console.error('Google 검색 실패', e);
+            console.error('Google検索に失敗しました', e);
         }
     };
 
+    // GPSを使って現在地から検索（半径3km以内にフィルタリング）
     const searchGooglePlacesByGps = async () => {
         if (!navigator.geolocation)
-            return alert('위치 기능을 사용할 수 없습니다');
+            return alert('位置情報サービスを使用できません');
         navigator.geolocation.getCurrentPosition(
             async ({ coords }) => {
                 const { latitude, longitude } = coords;
@@ -140,16 +146,17 @@ export default function RestaurantPage() {
                         setNextPageToken(null);
                     }
                 } catch (e) {
-                    console.error('GPS 검색 실패', e);
+                    console.error('GPS検索に失敗しました', e);
                 }
             },
             err => {
                 console.error(err);
-                alert('위치 접근 실패');
+                alert('位置情報へのアクセスに失敗しました');
             }
         );
     };
 
+    // 緯度・経度から距離を計算（キロメートル）
     const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
         const R = 6371;
         const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -163,6 +170,7 @@ export default function RestaurantPage() {
         return R * c;
     };
 
+    // 次のページの結果を取得（ページネーション対応）
     const fetchNextPage = async () => {
         if (!nextPageToken) return;
         try {
@@ -199,14 +207,15 @@ export default function RestaurantPage() {
                 setNextPageToken(resp.data.next_page_token);
             }
         } catch (e) {
-            console.error('다음 페이지 실패', e);
+            console.error('次のページの読み込みに失敗しました', e);
         }
     };
 
+    // 画面出力（検索入力・結果表示UI）
     return (
         <div className="bg-gray-100 min-h-screen py-10 px-4">
             <div className="max-w-4xl mx-auto">
-                <h2 className="text-2xl font-bold mt-10 mb-4">🗺️ 구글맵 맛집 검색</h2>
+                <h2 className="text-2xl font-bold mt-10 mb-4">Googleマップ飲食店検索</h2>
                 <div className="bg-white p-4 rounded-xl shadow space-y-4 mb-10">
                     <div className="flex gap-2 mb-2">
                         <button
@@ -215,7 +224,7 @@ export default function RestaurantPage() {
                             }`}
                             onClick={() => setSearchMode('city')}
                         >
-                            도시 검색
+                            都市名で検索
                         </button>
                         <button
                             className={`w-1/2 px-3 py-2 border rounded ${
@@ -223,19 +232,19 @@ export default function RestaurantPage() {
                             }`}
                             onClick={() => setSearchMode('gps')}
                         >
-                            📍 GPS 검색
+                            現在地で検索
                         </button>
                     </div>
                     <input
                         className="w-full px-3 py-2 border mb-2"
-                        placeholder="검색 키워드"
+                        placeholder="キーワード（例: ラーメン）"
                         value={keyword}
                         onChange={e => setKeyword(e.target.value)}
                     />
                     {searchMode === 'city' && (
                         <input
                             className="w-full px-3 py-2 border mb-2"
-                            placeholder="도시 (예: Tokyo)"
+                            placeholder="都市名（例: Tokyo）"
                             value={location}
                             onChange={e => setLocation(e.target.value)}
                         />
@@ -244,25 +253,25 @@ export default function RestaurantPage() {
                         className="btn w-full bg-blue-600 text-white py-2 rounded"
                         onClick={searchMode === 'city' ? searchGooglePlaces : searchGooglePlacesByGps}
                     >
-                        {searchMode === 'city' ? '도시 기반 검색' : '내 위치 검색'}
+                        {searchMode === 'city' ? '都市検索' : '現在地検索'}
                     </button>
                 </div>
-
-                <h3 className="text-xl font-semibold mb-4">📋 Google 검색 결과</h3>
+                {/* 検索結果一覧の表示 */}
+                <h3 className="text-xl font-semibold mb-4">Google検索結果</h3>
                 <div className="space-y-4 mb-10">
                     {googleResults.map((place, idx) => (
                         <div key={idx} className="bg-white p-4 rounded shadow">
-                            <p>🍴 이름: {place.name}</p>
+                            <p>店名: {place.name}</p>
                             <p>
-                                📍 주소:{' '}
+                                住所:{' '}
                                 {place.formatted_address ??
                                     place.vicinity ??
                                     place.detail?.formatted_address ??
-                                    '정보 없음'}
+                                    '情報なし'}
                             </p>
-                            <p>⭐ 평점: {place.rating ?? '정보 없음'}</p>
+                            <p>評価: {place.rating ?? '情報なし'}</p>
                             <p className="mt-2">
-                                ⏰ 영업시간:{' '}
+                                営業時間:{' '}
                                 {place.detail?.opening_hours ? (
                                     <div
                                         className="flex items-center space-x-1 cursor-pointer"
@@ -276,8 +285,8 @@ export default function RestaurantPage() {
                                             }
                                         >
                                             {place.detail.opening_hours.open_now
-                                                ? '영업 중'
-                                                : '영업 종료'}
+                                                ? '営業中'
+                                                : '営業時間外'}
                                         </span>
                                         <span>· {summarizeHours(place.detail.opening_hours)}</span>
                                         <span>
@@ -285,7 +294,7 @@ export default function RestaurantPage() {
                                         </span>
                                     </div>
                                 ) : (
-                                    '정보 없음'
+                                    '情報なし'
                                 )}
                             </p>
                             {expandedHours[place.placeId] &&
@@ -294,19 +303,19 @@ export default function RestaurantPage() {
                                         {place.detail.opening_hours.weekday_text.map(
                                             (line, i) => {
                                                 const [engDay, times] = line.split(': ');
-                                                const korDay =
+                                                const jpDay =
                                                     {
-                                                        Sunday: '일요일',
-                                                        Monday: '월요일',
-                                                        Tuesday: '화요일',
-                                                        Wednesday: '수요일',
-                                                        Thursday: '목요일',
-                                                        Friday: '금요일',
-                                                        Saturday: '토요일',
+                                                        Sunday: '日曜日',
+                                                        Monday: '月曜日',
+                                                        Tuesday: '火曜日',
+                                                        Wednesday: '水曜日',
+                                                        Thursday: '木曜日',
+                                                        Friday: '金曜日',
+                                                        Saturday: '土曜日',
                                                     }[engDay] || engDay;
                                                 return (
                                                     <li key={i}>
-                                                        {korDay} {times}
+                                                        {jpDay} {times}
                                                     </li>
                                                 );
                                             }
@@ -314,20 +323,20 @@ export default function RestaurantPage() {
                                     </ul>
                                 )}
                             <p className="mt-2">
-                                💰 가격대:{' '}
+                                価格帯:{' '}
                                 {typeof place.detail?.price_level === 'number'
                                     ? priceLabels[place.detail.price_level]
-                                    : '정보 없음'}
+                                    : '情報なし'}
                             </p>
                             <p className="mt-2">
-                                ☎ 전화번호:{' '}
-                                {place.detail?.formatted_phone_number ?? '정보 없음'}
+                                電話番号:{' '}
+                                {place.detail?.formatted_phone_number ?? '情報なし'}
                             </p>
                             <button
                                 className="btn mt-4"
                                 onClick={() => registerGooglePlace(place)}
                             >
-                                등록하기
+                                登録する
                             </button>
                         </div>
                     ))}
@@ -335,7 +344,7 @@ export default function RestaurantPage() {
                 {nextPageToken && (
                     <div className="mt-6">
                         <button className="btn w-full" onClick={fetchNextPage}>
-                            다음 페이지 불러오기
+                            次のページを読み込む
                         </button>
                     </div>
                 )}
@@ -344,7 +353,7 @@ export default function RestaurantPage() {
                         className="btn bg-blue-500 hover:bg-blue-600 text-white"
                         onClick={() => window.location.href = '/'}
                     >
-                        ⬅️ 메인페이지로 돌아가기
+                        メインページへ戻る
                     </button>
                 </div>
             </div>

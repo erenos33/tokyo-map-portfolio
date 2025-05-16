@@ -3,11 +3,13 @@ import axiosInstance from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 export default function ReviewCreatePage() {
+    // フォーム入力状態
     const [restaurantId, setRestaurantId] = useState('');
     const [rating, setRating] = useState(5);
     const [content, setContent] = useState('');
     const navigate = useNavigate();
 
+    // レビュー作成リクエスト送信
     const createReview = async () => {
         try {
             await axiosInstance.post(`/reviews`, {
@@ -15,21 +17,21 @@ export default function ReviewCreatePage() {
                 rating: Number(rating),
                 content,
             });
-            alert('✅ 리뷰 작성 성공!');
+            alert('レビューを作成しました。');
             navigate('/');
         } catch (error) {
-            console.error('리뷰 작성 실패:', error);
-            alert('❌ 리뷰 작성 실패');
+            console.error('レビュー作成失敗:', error);
+            alert('レビューの作成に失敗しました。');
         }
     };
 
     return (
         <div className="bg-gray-100 min-h-screen py-10 px-4">
             <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow">
-                <h2 className="text-2xl font-bold mb-6 text-center">✍️ 리뷰 작성 페이지</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center">レビュー作成ページ</h2>
 
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">음식점 ID</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">レストランID</label>
                     <input
                         type="text"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 placeholder-gray-400"
@@ -40,7 +42,7 @@ export default function ReviewCreatePage() {
                 </div>
 
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">별점 (1~5)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">評価（1〜5）</label>
                     <input
                         type="number"
                         min="1"
@@ -52,11 +54,11 @@ export default function ReviewCreatePage() {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">리뷰 내용</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">レビュー内容</label>
                     <textarea
                         rows="5"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-400 resize-none"
-                        placeholder="리뷰를 입력하세요"
+                        placeholder="レビューを入力してください"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                     ></textarea>
@@ -66,7 +68,7 @@ export default function ReviewCreatePage() {
                     className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
                     onClick={createReview}
                 >
-                    리뷰 작성하기
+                    レビューを投稿する
                 </button>
             </div>
             <div className="mt-10 text-center">
@@ -74,7 +76,7 @@ export default function ReviewCreatePage() {
                     className="btn bg-blue-500 hover:bg-blue-600 text-white"
                     onClick={() => window.location.href = '/'}
                 >
-                    ⬅️ 메인페이지로 돌아가기
+                    メインページに戻る
                 </button>
             </div>
         </div>
