@@ -1,5 +1,5 @@
 spring:
   application:
-    name: tokyomap
+    name: tokyomap # アプリケーションの名前（Spring Boot用サービス名として利用）
   profiles:
-    active: local  # 로컬 개발용 설정을 기본 사용
+    active: local # 使用するプロファイルを指定（application-local.yml を適用）

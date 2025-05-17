@@ -1,23 +1,23 @@
-# Gradle
+# ───── Gradleビルド関連ファイル ─────
 .gradle/
 build/
 out/
 
-# IntelliJ
+# ───── IntelliJ IDEA関連ファイル ─────
 .idea/
 *.iml
 
-# Logs
+# ───── ログファイル ─────
 *.log
 
-# OS
+# ───── OSの自動生成ファイル（Mac） ─────
 .DS_Store
 
-# 환경파일
+# ───── 環境設定ファイル（セキュリティ上Gitから除外）─────
 .env
 application-*.yml
 application-local.yml
 application-prod.yml
 
-# QueryDSL generated files
+# ───── QueryDSLによって生成されるファイル ─────
 /src/main/generated/
