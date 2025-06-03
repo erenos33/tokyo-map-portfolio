@@ -254,7 +254,7 @@ export default function MyRestaurantPage() {
         <div className="bg-gray-100 min-h-screen py-10 px-4">
             <div className="max-w-5xl mx-auto">
                 <h2 className="text-3xl font-bold text-center mb-8">
-                    🍽 {showFavoritesOnly ? '내 즐겨찾기' : '내가 등록한 맛집'}
+                    🍽 {showFavoritesOnly ? 'お気に入りリスト' : '自分が登録したレストラン'}
                 </h2>
 
                 {/* お気に入りフィルター切替ボタン */}

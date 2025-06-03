@@ -35,7 +35,7 @@ export default function RestaurantPage() {
         const korPeriod = period === 'AM' ? '午前' : '午後';
         const action = opening_hours.open_now ? '営業終了' : '営業開始';
 
-        return `${korPeriod} ${timeStr}에 ${action}`;
+        return `${korPeriod} ${timeStr}に ${action}`;
     };
 
     // Google詳細情報取得API呼び出し
