@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/restaurants/location").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/restaurants/location/next").permitAll()
                         .requestMatchers(
+                                "/",
                                 "/api/users/**",
                                 "/api/email/send",
                                 "/api/email/verify",
