@@ -2,4 +2,4 @@ spring:
   application:
     name: tokyomap # アプリケーションの名前（Spring Boot用サービス名として利用）
   profiles:
-    active: local # 使用するプロファイルを指定（application-local.yml を適用）
+    active: prod
