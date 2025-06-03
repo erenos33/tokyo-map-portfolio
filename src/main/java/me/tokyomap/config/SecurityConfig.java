@@ -73,8 +73,7 @@ public class SecurityConfig {
                                 "/api/locations/**",
                                 "/api/maps/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/h2-console/**"
+                                "/v3/api-docs/**"
                         ).permitAll()
 
                         //  認証が必要なエンドポイント
