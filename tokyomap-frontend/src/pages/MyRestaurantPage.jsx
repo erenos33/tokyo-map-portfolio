@@ -53,7 +53,7 @@ export default function MyRestaurantPage() {
             console.error('登録済み飲食店の取得に失敗', e);
             if (e.response?.status === 403) {
                 alert("メール認証が必要です。");
-                navigate("/verify-email");
+                navigate("/email/verify");
             } else {
                 alert("飲食店一覧の取得に失敗しました。");
             }
