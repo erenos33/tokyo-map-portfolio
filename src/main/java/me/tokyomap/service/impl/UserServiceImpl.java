@@ -30,8 +30,6 @@ public class UserServiceImpl implements UserService {
         if(userRepository.existsByEmail(requestDto.getEmail())) {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-
-        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
         User user = UserMapper.toEntity(requestDto, passwordEncoder);
         userRepository.save(user);
 
