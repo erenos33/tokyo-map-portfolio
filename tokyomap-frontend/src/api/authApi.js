@@ -4,7 +4,7 @@
 export async function fetchUserPage() {
     const token = localStorage.getItem('accessToken');
     try {
-        const res = await fetch('http://localhost:8080/api/auth/test', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/test`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -24,7 +24,7 @@ export async function fetchUserPage() {
 export async function fetchAdminPage() {
     const token = localStorage.getItem('accessToken');
     try {
-        const res = await fetch('http://localhost:8080/api/auth/admin/only', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/admin/only`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

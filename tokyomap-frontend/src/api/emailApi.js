@@ -3,7 +3,7 @@
 // 認証メールを送信するAPI
 export async function sendVerificationEmail(email) {
     try {
-        const response = await fetch(`http://localhost:8080/api/email/send?email=${email}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/email/send?email=${email}`, {
             method: 'POST',
         });
         if (response.ok) {
@@ -21,7 +21,7 @@ export async function sendVerificationEmail(email) {
 // 認証コードを確認するAPI
 export async function verifyEmailCode(email, code) {
     try {
-        const response = await fetch(`http://localhost:8080/api/email/verify`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/email/verify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

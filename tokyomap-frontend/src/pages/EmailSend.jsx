@@ -9,7 +9,7 @@ export default function EmailSend() {
     // 認証メールを再送する処理
     const handleSend = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/email/send?email=${email}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/email/send?email=${email}`, {
                 method: 'POST'
             });
 

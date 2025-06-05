@@ -22,7 +22,7 @@ export default function EmailVerify() {
         setSending(true);
         try {
             await axios.post(
-                'http://localhost:8080/api/email/send',
+                `${import.meta.env.VITE_API_BASE_URL}/api/email/send`,
                 null,
                 { params: { email } }
             );
@@ -48,7 +48,7 @@ export default function EmailVerify() {
             console.log('📦リクエスト送信内容:', { email, code: trimmed });
 
             await axios.post(
-                'http://localhost:8080/api/email/verify',
+                `${import.meta.env.VITE_API_BASE_URL}/api/email/verify`,
                 { email, code: trimmed },
                 { headers: { 'Content-Type': 'application/json' } }
             );

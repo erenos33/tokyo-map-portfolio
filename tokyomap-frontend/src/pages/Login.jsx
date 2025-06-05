@@ -10,16 +10,24 @@ export default function Login() {
     // ログイン処理
     const handleLogin = async () => {
         try {
-            const res = await fetch('http://localhost:8080/api/auth/login', {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
 
             if (!res.ok) {
-                const errorData = await res.json();
+                let errorData;
+                try {
+                    errorData = await res.json(); // JSONレスポンスを解析（成功時）
+                } catch {
+                    const errorText = await res.text(); // 空のレスポンスまたはJSON以外の場合の処理
+                    console.error("レスポンスが空またはJSON形式ではありません:", errorText);
+                    setMessage('ログインに失敗しました。');
+                    return;
+                }
 
-                // メール認証が未完了の場合、認証ページにリダイレクト
+                // メール認証が未完了の場合のリダイレクト処理
                 if (errorData.errorCode === 'EMAIL_NOT_VERIFIED') {
                     setMessage('メール認証が必要です。認証ページに移動します。');
                     localStorage.setItem('pendingEmail', email);
@@ -29,10 +37,11 @@ export default function Login() {
                     return;
                 }
 
-                // その他のログイン失敗
+                // その他のエラー時のメッセージ
                 setMessage('ログインに失敗しました。');
                 return;
             }
+
 
             // ログイン成功時、トークン保存とリダイレクト
             const result = await res.json();

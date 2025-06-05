@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Axiosのインスタンスを作成（APIの共通設定）
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8080/api', // APIのベースURL
+    baseURL: `${import.meta.env.VITE_API_BASE_URL}/api`, // APIのベースURL
     withCredentials: true, // 認証情報をリクエストに含める
 });
 
