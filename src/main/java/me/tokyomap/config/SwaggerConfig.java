@@ -5,9 +5,13 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+
 /**
  * JWT認証をSwagger UIで使用するためのセキュリティスキーム設定
  */
@@ -30,7 +34,10 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("グルメマップポートフォリオAPI")
                         .version("v1")
-                        .description("グルメマップポートフォリオプロジェクトのSwaggerドキュメントです。"));
+                        .description("グルメマップポートフォリオプロジェクトのSwaggerドキュメントです。"))
+                .servers(List.of(
+                        new Server().url("https://tokyo-map-portfolio-production.up.railway.app")
+                ));
     }
 
     /**
