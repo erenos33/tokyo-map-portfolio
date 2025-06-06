@@ -19,7 +19,7 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // 全てのパスを対象
                         .allowedOrigins("http://localhost:5173") // 許可するフロントエンドのURL
-                        .allowedOrigins("https://tokyo-map-portfolio-production.up.railway.app")// 許可するバックエンドのURL
+                        .allowedOrigins("http://tokyo-map-portfolio-production.up.railway.app")// 許可するバックエンドのURL
                         .allowedMethods("*") // 全てのHTTPメソッドを許可
                         .allowedHeaders("*") // 全てのヘッダーを許可
                         .allowCredentials(true); // 認証情報を許可（Cookieなど）
