@@ -15,9 +15,7 @@ out/
 
 # ───── 環境設定ファイル（セキュリティ上Gitから除外）─────
 .env
-application-*.yml
 application-local.yml
-application-prod.yml
 
 # ───── QueryDSLによって生成されるファイル ─────
 /src/main/generated/

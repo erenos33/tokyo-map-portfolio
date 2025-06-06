@@ -22,7 +22,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/users/register",
+					"raw": "${import.meta.env.VITE_API_BASE_URL}/api/users/register",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -44,7 +44,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/email/send?email=test@example.com",
+					"raw": "${import.meta.env.VITE_API_BASE_URL}/api/email/send?email=test@example.com",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -81,7 +81,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/email/verify",
+					"raw": "${import.meta.env.VITE_API_BASE_URL}/api/email/verify",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -125,7 +125,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/auth/login",
+					"raw": "${import.meta.env.VITE_API_BASE_URL}/api/auth/login",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -157,7 +157,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/auth/test",
+					"raw": "${import.meta.env.VITE_API_BASE_URL}/api/auth/test",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -189,7 +189,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/auth/admin/only",
+					"raw": "${import.meta.env.VITE_API_BASE_URL}/api/auth/admin/only",
 					"protocol": "http",
 					"host": [
 						"localhost"

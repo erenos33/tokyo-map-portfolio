@@ -39,7 +39,7 @@ Spring Boot + React を使用した東京のグルメ検索サービスのバッ
 
 ## 📄 APIドキュメント
 
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- Swagger UI: `${import.meta.env.VITE_API_BASE_URL}/swagger-ui/index.html`
 - Bearer TokenによるJWT認証対応済
 
 ---
