@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         Locale locale = LocaleContextHolder.getLocale();
 
         String localizedMessage = messageSource.getMessage(
-                errorCode.getMessage(), // 메시지 키
+                errorCode.getMessage(),
                 null,
                 locale
         );

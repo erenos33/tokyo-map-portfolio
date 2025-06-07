@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import me.tokyomap.dto.common.ApiResponse;
 import me.tokyomap.dto.user.UserRegisterRequestDto;
 import me.tokyomap.service.UserService;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final MessageSource messageSource;
 
     /**
      * ユーザー登録（会員登録）
@@ -30,6 +33,9 @@ public class UserController {
     )
     public ApiResponse<String> registUser(@RequestBody @Valid UserRegisterRequestDto requestDto) {
         userService.registerUser(requestDto);
-        return ApiResponse.success("ユーザー登録が完了しました。");
+        String message = messageSource.getMessage(
+                "success.registered", null, LocaleContextHolder.getLocale()
+        );
+        return ApiResponse.success(message);
     }
 }
