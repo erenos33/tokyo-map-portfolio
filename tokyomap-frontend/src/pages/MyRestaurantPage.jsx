@@ -78,32 +78,56 @@ export default function MyRestaurantPage() {
     const summarizeHours = (hoursText) => {
         if (!hoursText) return '';
         const parts = hoursText.split(/,\s*|\n/).map(s => s.trim());
-        const idx   = (new Date().getDay() + 6) % 7;
-        const line  = parts[idx] || '';
-        const m     = line.match(/(\d{1,2}:\d{2})\s*([AP]M)\s*[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
-        if (!m) return '';
-        const [, , , end, period] = m;
-        return `${period === 'AM' ? '午前' : '午後'} ${end}に営業終了`;
+        const idx = (new Date().getDay() + 6) % 7;
+        const line = parts[idx] || '';
+
+        const enMatch = line.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
+        if (enMatch) {
+            const [, , , end, period] = enMatch;
+            return `${period === 'AM' ? '午前' : '午後'} ${end}に営業終了`;
+        }
+
+        const jaMatch = line.match(/(\d{1,2})時(\d{2})分～(\d{1,2})時(\d{2})分/);
+        if (jaMatch) {
+            const [, , , endHour, endMin] = jaMatch;
+            const period = parseInt(endHour) < 12 ? '午前' : '午後';
+            return `${period} ${endHour}:${endMin}に営業終了`;
+        }
+
+        return '';
     };
 
-    // 現在営業中かどうかを判定
     const isOpenNow = (hoursText) => {
         if (!hoursText) return false;
         const parts = hoursText.split(/,\s*|\n/).map(s => s.trim());
-        const idx   = (new Date().getDay() + 6) % 7;
-        const line  = parts[idx] || '';
-        const m     = line.match(/(\d{1,2}:\d{2})\s*([AP]M)\s*[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
-        if (!m) return false;
-        const [, start, sp, end, ep] = m;
+        const idx = (new Date().getDay() + 6) % 7;
+        const line = parts[idx] || '';
+        const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+
         const toMin = (t, p) => {
             let [h, m] = t.split(':').map(Number);
             if (p === 'PM' && h !== 12) h += 12;
             if (p === 'AM' && h === 12) h = 0;
             return h * 60 + m;
         };
-        const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
-        return nowMin >= toMin(start, sp) && nowMin <= toMin(end, ep);
+
+        const enMatch = line.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
+        if (enMatch) {
+            const [, start, sp, end, ep] = enMatch;
+            return nowMin >= toMin(start, sp) && nowMin <= toMin(end, ep);
+        }
+
+        const jaMatch = line.match(/(\d{1,2})時(\d{2})分～(\d{1,2})時(\d{2})分/);
+        if (jaMatch) {
+            const [, sh, sm, eh, em] = jaMatch.map(Number);
+            const startMin = sh * 60 + sm;
+            const endMin = eh * 60 + em;
+            return nowMin >= startMin && nowMin <= endMin;
+        }
+
+        return false;
     };
+
 
     // レビュー編集状態の管理
     const handleReviewChange = (rid, field, value) => {
