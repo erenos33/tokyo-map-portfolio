@@ -28,22 +28,31 @@ export default function RestaurantPage() {
         const todayLine = opening_hours.weekday_text[googleIndex];
         if (typeof todayLine !== 'string') return '';
 
+        // 1) “요일:” 뒤에 나오는 시간 파트만 뽑기 (콜론은 : 또는 ：)
+        const [, timePart = ''] = todayLine.split(/[:：]\s*/);
 
-        let m = todayLine.match(
-            /(\d{1,2}:\d{2})\s*([AP]M)\s*[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/
-        );
-        if (m) {
-            const [, , , end, period] = m;
+        // 2) 시작/끝 분리 (–, ~, ～, - 등 모두 허용)
+        const [startRaw = '', endRaw = ''] = timePart.split(/[–〜~\-]/).map(s => s.trim());
+
+        // 3) 어느 쪽 쓰느냐
+        const rawToUse = opening_hours.open_now ? endRaw : startRaw;
+
+        // 4) AM/PM 포맷이면
+        if (/[AP]M$/.test(rawToUse)) {
+            const [timeStr, period] = rawToUse.split(' ');
             const korPeriod = period === 'AM' ? '午前' : '午後';
             const action = opening_hours.open_now ? '営業終了' : '営業開始';
-            return `${korPeriod} ${end}に ${action}`;
+            return `${korPeriod} ${timeStr}に ${action}`;
         }
 
-        m = todayLine.match(/(\d{1,2})時(\d{2})分～(\d{1,2})時(\d{2})分/);
-        if (m) {
-            const [, , , eh, em] = m;
-            const action = opening_hours.open_now ? '営業終了' : '営業開始';
-            return `午後 ${eh}:${em}に ${action}`;
+        // 5) “11時00分” 같은 일본어 포맷이면
+        const jp = rawToUse.match(/(\d{1,2})時(\d{2})分/);
+        if (jp) {
+            const hour   = Number(jp[1]);
+            const minute = jp[2];
+            const korPeriod = hour < 12 ? '午前' : '午後';
+            const action    = opening_hours.open_now ? '営業終了' : '営業開始';
+            return `${korPeriod} ${hour.toString().padStart(2,'0')}:${minute}に ${action}`;
         }
 
         return '';
