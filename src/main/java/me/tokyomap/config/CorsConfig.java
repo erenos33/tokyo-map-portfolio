@@ -18,7 +18,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // 全てのパスを対象
-                        .allowedOrigins("https://tokyo-map-portfolio.vercel.app", "https://tokyo-map-portfolio-production.up.railway.app/") // 許可するフロントエンドのURL
+                        .allowedOrigins(
+                                "https://tokyo-map-portfolio.vercel.app",
+                                "http://localhost:5173/",
+                                "https://tokyo-map-portfolio-production.up.railway.app/") // 許可するURL
                         .allowedMethods("*") // 全てのHTTPメソッドを許可
                         .allowedHeaders("*") // 全てのヘッダーを許可
                         .allowCredentials(true); // 認証情報を許可（Cookieなど）
