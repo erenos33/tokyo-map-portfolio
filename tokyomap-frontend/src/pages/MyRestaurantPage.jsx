@@ -77,26 +77,17 @@ export default function MyRestaurantPage() {
     // 営業時間の要約
     const summarizeHours = (hoursText) => {
         if (!hoursText) return '';
-
-        const weekday = new Date().getDay();
-        const jpDays = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
-        const enDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const todayLabels = [jpDays[weekday], enDays[weekday]];
-
         const parts = hoursText.split(/,\s*|\n/).map(s => s.trim());
-        const todayLines = parts.filter(line => todayLabels.some(label => line.startsWith(label)) || /^\d{1,2}時/.test(line));
+        const idx = (new Date().getDay() + 6) % 7;
+        const line = parts[idx] || '';
 
-        if (todayLines.length === 0) return '';
-
-        const lastLine = todayLines[todayLines.length - 1];
-
-        const enMatch = lastLine.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-〜~]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
+        const enMatch = line.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
         if (enMatch) {
             const [, , , end, period] = enMatch;
             return `${period === 'AM' ? '午前' : '午後'} ${end}に営業終了`;
         }
 
-        const jaMatch = lastLine.match(/(\d{1,2})時(\d{2})分[–-〜~](\d{1,2})時(\d{2})分/);
+        const jaMatch = line.match(/(\d{1,2})時(\d{2})分～(\d{1,2})時(\d{2})分/);
         if (jaMatch) {
             const [, , , endHour, endMin] = jaMatch;
             const period = parseInt(endHour) < 12 ? '午前' : '午後';
@@ -108,15 +99,9 @@ export default function MyRestaurantPage() {
 
     const isOpenNow = (hoursText) => {
         if (!hoursText) return false;
-
-        const weekday = new Date().getDay();
-        const jpDays = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
-        const enDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const todayLabels = [jpDays[weekday], enDays[weekday]];
-
         const parts = hoursText.split(/,\s*|\n/).map(s => s.trim());
-        const todayLines = parts.filter(line => todayLabels.some(label => line.startsWith(label)) || /^\d{1,2}時/.test(line));
-
+        const idx = (new Date().getDay() + 6) % 7;
+        const line = parts[idx] || '';
         const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
 
         const toMin = (t, p) => {
@@ -126,20 +111,18 @@ export default function MyRestaurantPage() {
             return h * 60 + m;
         };
 
-        for (const line of todayLines) {
-            const enMatch = line.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-〜~]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
-            if (enMatch) {
-                const [, start, sp, end, ep] = enMatch;
-                if (nowMin >= toMin(start, sp) && nowMin <= toMin(end, ep)) return true;
-            }
+        const enMatch = line.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
+        if (enMatch) {
+            const [, start, sp, end, ep] = enMatch;
+            return nowMin >= toMin(start, sp) && nowMin <= toMin(end, ep);
+        }
 
-            const jaMatch = line.match(/(\d{1,2})時(\d{2})分[–-〜~](\d{1,2})時(\d{2})分/);
-            if (jaMatch) {
-                const [, sh, sm, eh, em] = jaMatch.map(Number);
-                const startMin = sh * 60 + sm;
-                const endMin = eh * 60 + em;
-                if (nowMin >= startMin && nowMin <= endMin) return true;
-            }
+        const jaMatch = line.match(/(\d{1,2})時(\d{2})分～(\d{1,2})時(\d{2})分/);
+        if (jaMatch) {
+            const [, sh, sm, eh, em] = jaMatch.map(Number);
+            const startMin = sh * 60 + sm;
+            const endMin = eh * 60 + em;
+            return nowMin >= startMin && nowMin <= endMin;
         }
 
         return false;
