@@ -77,21 +77,45 @@ export default function MyRestaurantPage() {
     // 営業時間の要約
     const summarizeHours = (hoursText) => {
         if (!hoursText) return '';
-        const parts = hoursText.split(/,\s*|\n/).map(s => s.trim());
-        const idx = (new Date().getDay() + 6) % 7;
-        const line = parts[idx] || '';
 
-        const enMatch = line.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
+        const weekday = new Date().getDay(); // 0 = Sunday
+        const jpDays = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
+        const today = jpDays[weekday];
+
+        const lines = hoursText.split(/,\s*|\n/).map(s => s.trim());
+
+        // 오늘 요일로 시작하거나, 이전 줄이 오늘 요일이었고 이번 줄은 숫자로 시작하면 포함
+        const todayLines = [];
+        let include = false;
+
+        for (const line of lines) {
+            if (line.startsWith(today)) {
+                todayLines.push(line);
+                include = true;
+            } else if (include && /^[\d０-９]{1,2}/.test(line)) {
+                todayLines.push(line);
+            } else {
+                include = false;
+            }
+        }
+
+        if (todayLines.length === 0) return '';
+
+        const lastLine = todayLines[todayLines.length - 1];
+
+        // 일본어 시간 포맷 처리
+        const jaMatch = lastLine.match(/(\d{1,2})時(\d{2})分[～〜\-~](\d{1,2})時(\d{2})分/);
+        if (jaMatch) {
+            const [, , , eh, em] = jaMatch;
+            const period = parseInt(eh) < 12 ? '午前' : '午後';
+            return `${period} ${eh}:${em}に営業終了`;
+        }
+
+        // 영어 포맷 처리
+        const enMatch = lastLine.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-〜~]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
         if (enMatch) {
             const [, , , end, period] = enMatch;
             return `${period === 'AM' ? '午前' : '午後'} ${end}に営業終了`;
-        }
-
-        const jaMatch = line.match(/(\d{1,2})時(\d{2})分～(\d{1,2})時(\d{2})分/);
-        if (jaMatch) {
-            const [, , , endHour, endMin] = jaMatch;
-            const period = parseInt(endHour) < 12 ? '午前' : '午後';
-            return `${period} ${endHour}:${endMin}に営業終了`;
         }
 
         return '';
@@ -99,30 +123,51 @@ export default function MyRestaurantPage() {
 
     const isOpenNow = (hoursText) => {
         if (!hoursText) return false;
-        const parts = hoursText.split(/,\s*|\n/).map(s => s.trim());
-        const idx = (new Date().getDay() + 6) % 7;
-        const line = parts[idx] || '';
+
+        const weekday = new Date().getDay();
+        const jpDays = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
+        const today = jpDays[weekday];
         const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
 
-        const toMin = (t, p) => {
-            let [h, m] = t.split(':').map(Number);
-            if (p === 'PM' && h !== 12) h += 12;
-            if (p === 'AM' && h === 12) h = 0;
-            return h * 60 + m;
-        };
+        const lines = hoursText.split(/,\s*|\n/).map(s => s.trim());
+        const todayLines = [];
+        let include = false;
 
-        const enMatch = line.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
-        if (enMatch) {
-            const [, start, sp, end, ep] = enMatch;
-            return nowMin >= toMin(start, sp) && nowMin <= toMin(end, ep);
+        for (const line of lines) {
+            if (line.startsWith(today)) {
+                todayLines.push(line);
+                include = true;
+            } else if (include && /^[\d０-９]{1,2}/.test(line)) {
+                todayLines.push(line);
+            } else {
+                include = false;
+            }
         }
 
-        const jaMatch = line.match(/(\d{1,2})時(\d{2})分～(\d{1,2})時(\d{2})分/);
-        if (jaMatch) {
-            const [, sh, sm, eh, em] = jaMatch.map(Number);
-            const startMin = sh * 60 + sm;
-            const endMin = eh * 60 + em;
-            return nowMin >= startMin && nowMin <= endMin;
+        const toMin = (h, m) => h * 60 + m;
+
+        for (const line of todayLines) {
+            const jaMatch = line.match(/(\d{1,2})時(\d{2})分[～〜\-~](\d{1,2})時(\d{2})分/);
+            if (jaMatch) {
+                const [, sh, sm, eh, em] = jaMatch.map(Number);
+                const start = toMin(sh, sm);
+                const end = toMin(eh, em);
+                if (nowMin >= start && nowMin <= end) return true;
+            }
+
+            const enMatch = line.match(/(\d{1,2}:\d{2})\s*([AP]M).*?[–-〜~]\s*(\d{1,2}:\d{2})\s*([AP]M)/);
+            if (enMatch) {
+                const [, start, sp, end, ep] = enMatch;
+                const conv = (t, p) => {
+                    let [h, m] = t.split(':').map(Number);
+                    if (p === 'PM' && h !== 12) h += 12;
+                    if (p === 'AM' && h === 12) h = 0;
+                    return h * 60 + m;
+                };
+                const startMin = conv(start, sp);
+                const endMin = conv(end, ep);
+                if (nowMin >= startMin && nowMin <= endMin) return true;
+            }
         }
 
         return false;
