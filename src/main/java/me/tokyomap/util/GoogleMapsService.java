@@ -112,6 +112,7 @@ public class GoogleMapsService {
                         .queryParam("place_id", placeId)
                         .queryParam("fields", "formatted_address,formatted_phone_number,price_level,opening_hours")
                         .queryParam("key", apiKey)
+                        .queryParam("language", "ja")
                         .build())
                 .retrieve()
                 .onStatus(
