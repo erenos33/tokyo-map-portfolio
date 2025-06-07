@@ -302,7 +302,9 @@ export default function RestaurantPage() {
                                     <ul className="mt-1 list-disc list-inside text-sm">
                                         {place.detail.opening_hours.weekday_text.map(
                                             (line, i) => {
-                                                const [engDay, times] = line.split(': ');
+                                                const [rawDay, rawTimes] = line.split(':');
+                                                const engDay  = rawDay?.trim() ?? '';
+                                                const times   = rawTimes?.trim() ?? '';
                                                 const jpDay =
                                                     {
                                                         Sunday: '日曜日',
