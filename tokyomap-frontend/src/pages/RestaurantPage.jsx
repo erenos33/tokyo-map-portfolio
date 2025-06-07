@@ -22,20 +22,31 @@ export default function RestaurantPage() {
             !Array.isArray(opening_hours.weekday_text) ||
             opening_hours.open_now == null
         ) return '';
+
         const jsDay = new Date().getDay();
         const googleIndex = (jsDay + 6) % 7;
         const todayLine = opening_hours.weekday_text[googleIndex];
         if (typeof todayLine !== 'string') return '';
-        const parts = todayLine.split(': ');
-        if (parts.length < 2 || !parts[1].includes('–')) return '';
 
-        const [start, end] = parts[1].split('–').map(s => s.trim());
-        const timeToUse = opening_hours.open_now ? end : start;
-        const [timeStr, period] = timeToUse.split(' ');
-        const korPeriod = period === 'AM' ? '午前' : '午後';
-        const action = opening_hours.open_now ? '営業終了' : '営業開始';
 
-        return `${korPeriod} ${timeStr}に ${action}`;
+        let m = todayLine.match(
+            /(\d{1,2}:\d{2})\s*([AP]M)\s*[–-]\s*(\d{1,2}:\d{2})\s*([AP]M)/
+        );
+        if (m) {
+            const [, , , end, period] = m;
+            const korPeriod = period === 'AM' ? '午前' : '午後';
+            const action = opening_hours.open_now ? '営業終了' : '営業開始';
+            return `${korPeriod} ${end}に ${action}`;
+        }
+
+        m = todayLine.match(/(\d{1,2})時(\d{2})分～(\d{1,2})時(\d{2})分/);
+        if (m) {
+            const [, , , eh, em] = m;
+            const action = opening_hours.open_now ? '営業終了' : '営業開始';
+            return `午後 ${eh}:${em}に ${action}`;
+        }
+
+        return '';
     };
 
     // Google詳細情報取得API呼び出し
