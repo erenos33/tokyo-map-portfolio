@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Backend local config / secrets
+src/main/resources/application-local.yml
+
+# Frontend env
+.env
+.env.*
+!.env.example
